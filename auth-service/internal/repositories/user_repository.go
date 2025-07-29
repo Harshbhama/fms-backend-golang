@@ -17,12 +17,12 @@ func NewUserRepository(db *sql.DB) *UserRepository {
 }
 
 func (r *UserRepository) CreateUser(user *models.User) error {
-	query := `INSERT INTO users (email, password, created_at, updated_at)
-		VALUES ($1, $2, $3, $4) RETURNING id`
+	query := `INSERT INTO users (email, password, role, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5) RETURNING id`
 
-	return r.db.QueryRow(query, user.Email, user.Password, time.Now(), time.Now()).Scan(&user.ID)
+	return r.db.QueryRow(query, user.Email, user.Password, user.Role, time.Now(), time.Now()).Scan(&user.ID)
 }
-
+ 
 func (r *UserRepository) GetUser(id int64) (*models.User, error) {
 	query := `SELECT * FROM users WHERE id = $1`
 

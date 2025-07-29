@@ -29,7 +29,7 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 
 	if err := h.userService.CreateUser(&user); err != nil {
 		h.logger.Error("Failed to create user:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user", "msg": err})
 		return
 	}
 
