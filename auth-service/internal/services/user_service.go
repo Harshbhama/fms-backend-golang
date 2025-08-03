@@ -24,3 +24,7 @@ func (s *UserService) GetUser(id int64) (*models.User, error) {
 func (s *UserService) UpdateUser(id int64, user *models.User) error {
 	return s.userRepository.UpdateUser(id, user)
 }
+
+func (s *UserService) LoginUser(user *models.UserLogin) (*models.User, error) {
+	return s.userRepository.LoginUser(user)
+}

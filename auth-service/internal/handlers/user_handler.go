@@ -8,6 +8,7 @@ import (
 	"github.com/yourusername/auth-service/internal/models"
 	"github.com/yourusername/auth-service/internal/services"
 	"github.com/sirupsen/logrus"
+	"github.com/yourusername/auth-service/internal/utils"
 )
 
 type UserHandler struct {
@@ -26,6 +27,14 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
 		return
 	}
+	password, err := utils.HashPassword(user.Password)
+
+	if err != nil {
+		h.logger.Error("Failed to create user:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user", "msg": err})
+	}
+
+	user.Password = password
 
 	if err := h.userService.CreateUser(&user); err != nil {
 		h.logger.Error("Failed to create user:", err)
@@ -86,5 +95,24 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 		"message": "User updated successfully",
 		"user":    user,
 	})
+}
 
+func (h *UserHandler) LoginUser (c *gin.Context){
+	var user *models.UserLogin
+	var users *models.User
+	err := c.ShouldBindJSON(&user)
+	if err != nil {
+		h.logger.Error("Failed to bind login user:", err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to login user", "msg": err.Error()})
+	}
+	users, err = h.userService.LoginUser(user)
+	if err != nil {
+		h.logger.Error("Failed to login user:", err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to login user", "msg": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "User fetched successfully",
+		"user":    users,
+	})
 }

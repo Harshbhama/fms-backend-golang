@@ -31,7 +31,7 @@ func (r *SetupRoutes) Setup() {
 	// API Routes
 	r.Router.GET("/health", r.healthCheck)
 	r.Router.GET("/status", r.status)
-	r.Router.POST("/login", r.login)
+	r.Router.POST("/login", userHandler.LoginUser)
 	r.Router.POST("/users", userHandler.CreateUser)
 	r.Router.GET("/users/:id", userHandler.GetUser)
 	r.Router.PUT("/users/:id", userHandler.UpdateUser)
