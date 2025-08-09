@@ -29,3 +29,12 @@ func (r *ClientRepository) CreateClient(client *models.Client) error {
 	return r.db.QueryRow(query, client.ID, client.FirstName, client.LastName).Scan(&client.ID)
 }
 
+func (r *ClientRepository) CreateClientFreelancer(clientFreelancer *models.ClientFreelancer) error {
+	query := `INSERT INTO client_freelancers (client_id, freelancer_id, created_at)
+	          VALUES ($1, $2, NOW()) RETURNING client_id, freelancer_id`
+	_, err := r.db.Exec(query, clientFreelancer.ClientId, clientFreelancer.FreelancerId)
+	if err != nil {
+		return err
+	}
+	return nil
+}

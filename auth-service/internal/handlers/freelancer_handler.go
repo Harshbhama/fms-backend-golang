@@ -1,30 +1,40 @@
 package handlers
 
 import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"github.com/yourusername/auth-service/internal/models"
 	"github.com/yourusername/auth-service/internal/services"
-	"encoding/json"
-	"net/http"
 )
 
 type FreelancerHandler struct {
 	Service *services.FreelancerService
+	logger  *logrus.Logger
 }
 
-func NewFreelancerHandler(service *services.FreelancerService) *FreelancerHandler {
-	return &FreelancerHandler{Service: service}
+func NewFreelancerHandler(service *services.FreelancerService, logger *logrus.Logger) *FreelancerHandler {
+	return &FreelancerHandler{Service: service, logger: logger}
 }
 
-func (h *FreelancerHandler) CreateFreelancer(w http.ResponseWriter, r *http.Request) {
+func (h *FreelancerHandler) CreateFreelancer(c *gin.Context) {
 	var freelancer models.Freelancer
-	if err := json.NewDecoder(r.Body).Decode(&freelancer); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	print("Creating freelancer")
+
+	err := c.ShouldBindJSON(&freelancer)
+	if err != nil {
+		h.logger.Error("Failed to bind JSON:", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body", "msg": err.Error()})
 		return
 	}
-	if err := h.Service.CreateFreelancer(&freelancer); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+
+	err = h.Service.CreateFreelancer(&freelancer)
+	if err != nil {
+		h.logger.Error("Failed to create freelancer:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create freelancer", "msg": err.Error()})
 		return
 	}
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(freelancer)
+
+	c.JSON(http.StatusCreated, gin.H{"message": "Freelancer created successfully", "id": freelancer.ID})
 }

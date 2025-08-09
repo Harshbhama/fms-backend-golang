@@ -45,3 +45,21 @@ func (h *ClientHandler) CreateClient(c *gin.Context){
 	c.JSON(http.StatusCreated, gin.H{"message": "Client created successfully", "id": client.ID})
 }
 
+func (h *ClientHandler) CreateClientFreelancer(c *gin.Context) {
+	// This function is not implemented yet
+	var clientFreelancer models.ClientFreelancer
+	if err := c.ShouldBindJSON(&clientFreelancer); err != nil {
+		h.logger.Error("Failed to bind JSON:", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body", "msg": err.Error()})
+		return
+	}
+
+	err := h.clientService.CreateClientFreelancer(&clientFreelancer)
+	if err != nil {
+		h.logger.Error("Failed to create client-freelancer relationship:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create client-freelancer relationship", "msg": err.Error()})
+		return
+	}
+	c.JSON(http.StatusCreated, gin.H{"message": "Client-Freelancer relationship created successfully", "client_id": clientFreelancer.ClientId, "freelancer_id": clientFreelancer.FreelancerId})
+}
+

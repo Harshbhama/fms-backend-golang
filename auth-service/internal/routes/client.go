@@ -29,7 +29,7 @@ func (r *SetupClientRoutes) SetupClient() {
 	clientHandler := handlers.NewClientHandler(r.ClientService, r.Logger)
 
 	r.Router.POST("/client", clientHandler.CreateClient)
-	
+	r.Router.POST("/client-freelancer", clientHandler.CreateClientFreelancer)
 
 }
 

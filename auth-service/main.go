@@ -48,7 +48,9 @@ func main() {
 	clientRepo := repositories.NewClientRepository(cfg.DB)
 	clientService := services.NewClientService(clientRepo)
 	// authHandler := handlers.NewUserHandler(authService, logger)
-
+	freelancerRepo := repositories.NewFreelancerRepository(cfg.DB)
+	freelancerService := services.NewFreelancerService(freelancerRepo)
+	
 
 	router := gin.Default()
 
@@ -57,6 +59,9 @@ func main() {
 
 	authRoutes.Setup()
 	clientRoutes.SetupClient()
+
+	freelancerRoutes := routes.NewSetupFreelancerRoutes(router, logger, freelancerService)
+	freelancerRoutes.SetupFreelancer()
 	
 	port := ":8080"
 	if envPort := os.Getenv("PORT"); envPort != "" {

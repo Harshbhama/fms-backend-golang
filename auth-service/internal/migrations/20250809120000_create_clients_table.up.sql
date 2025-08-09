@@ -28,3 +28,17 @@ CREATE TABLE freelancers (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_client_user FOREIGN KEY (id) REFERENCES users(id) ON DELETE CASCADE
 );
+
+
+
+
+CREATE TABLE client_freelancers (
+    client_id BIGINT NOT NULL,
+    freelancer_id INT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    
+    CONSTRAINT fk_client FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE,
+    CONSTRAINT fk_freelancer FOREIGN KEY (freelancer_id) REFERENCES freelancers(id) ON DELETE CASCADE,
+    
+    CONSTRAINT pk_client_freelancer PRIMARY KEY (client_id, freelancer_id)
+);
