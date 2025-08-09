@@ -34,7 +34,7 @@ func (r *SetupRoutes) Setup() {
 	r.Router.POST("/login", userHandler.LoginUser) 
 	r.Router.POST("/users", userHandler.CreateUser)
 	r.Router.GET("/users/:id", userHandler.GetUser)
-	r.Router.PUT("/users/:id", userHandler.UpdateUser)
+	r.Router.PUT("/users/:email", userHandler.UpdateUser)
 
 }
 

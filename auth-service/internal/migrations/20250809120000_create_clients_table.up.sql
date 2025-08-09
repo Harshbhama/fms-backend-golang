@@ -16,3 +16,15 @@ ALTER TABLE clients ADD COLUMN last_name VARCHAR(255) NOT NULL;
 
 -- +goose Down
 DROP TABLE IF EXISTS clients;
+
+
+
+
+
+CREATE TABLE freelancers (
+    id INT PRIMARY KEY,
+    first_name TEXT NULL,
+    last_name TEXT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_client_user FOREIGN KEY (id) REFERENCES users(id) ON DELETE CASCADE
+);

@@ -5,9 +5,9 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"github.com/yourusername/auth-service/internal/models"
 	"github.com/yourusername/auth-service/internal/services"
-	"github.com/sirupsen/logrus"
 	"github.com/yourusername/auth-service/internal/utils"
 )
 
@@ -27,14 +27,20 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
 		return
 	}
-	password, err := utils.HashPassword(user.Password)
-
-	if err != nil {
-		h.logger.Error("Failed to create user:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user", "msg": err})
+	if user.Password != "" {
+		hashedPassword, err := utils.HashPassword(user.Password)
+		if err != nil {
+			h.logger.Error("Failed to hash password:", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user", "msg": err.Error()})
+			return
+		}
+		user.Password = hashedPassword
+	} else {
+		user.Password = ""
 	}
+	// password, err := utils.HashPassword(user.Password)
 
-	user.Password = password
+	// user.Password = password
 
 	if err := h.userService.CreateUser(&user); err != nil {
 		h.logger.Error("Failed to create user:", err)
@@ -68,10 +74,18 @@ func (h *UserHandler) GetUser(c *gin.Context) {
 		"message": "User fetched successfully",
 		"user":    user,
 	})
-} 
+}
 
 func (h *UserHandler) UpdateUser(c *gin.Context) {
-	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	email := c.Param("email")
+	print(email)
+	userByEmail, err := h.userService.GetUserByEmail(email)
+	if err != nil {
+		h.logger.Error("Failed to get user by email:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get user", "msg": err.Error()})
+		return
+	}
+	id := userByEmail.ID
 	if err != nil {
 		h.logger.Error("Failed to parse user ID:", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
@@ -81,13 +95,25 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 	var user models.User
 	if err := c.ShouldBindJSON(&user); err != nil {
 		h.logger.Error("Failed to bind JSON:", err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body", "msg": err.Error()})
 		return
 	}
 
-	if err := h.userService.UpdateUser(id, &user); err != nil {
+	if user.Password != "" {
+		hashedPassword, err := utils.HashPassword(user.Password)
+		if err != nil {
+			h.logger.Error("Failed to hash password:", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user", "msg": err.Error()})
+			return
+		}
+		user.Password = hashedPassword
+	} else {
+		user.Password = ""
+	}
+
+	if err := h.userService.UpdateUser(int64(id), &user); err != nil {
 		h.logger.Error("Failed to update user:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user", "msg": err.Error()})
 		return
 	}
 
@@ -97,7 +123,7 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 	})
 }
 
-func (h *UserHandler) LoginUser (c *gin.Context){
+func (h *UserHandler) LoginUser(c *gin.Context) {
 	var user *models.UserLogin
 	var users *models.User
 	err := c.ShouldBindJSON(&user)

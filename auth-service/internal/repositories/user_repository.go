@@ -39,9 +39,9 @@ func (r *UserRepository) GetUser(id int64) (*models.User, error) {
 }
 
 func (r *UserRepository) UpdateUser(id int64, user *models.User) error {
-	query := `UPDATE users SET first_name = $1, last_name = $2, email = $3, password = $4, updated_at = $5 WHERE id = $6`
+	query := `UPDATE users SET Email = $1, Password = $2, Role = $3 WHERE id = $4`
 
-	_, err := r.db.Exec(query, user.Email, user.Password, time.Now(), id)
+	_, err := r.db.Exec(query, user.Email, user.Password, user.Role, id)
 	return err
 }
 
@@ -68,4 +68,17 @@ func (r *UserRepository) LoginUser(loginInput *models.UserLogin) (*models.User, 
 		return nil, errors.New("password is not correct")
 	}
 
+}
+
+func (r *UserRepository) GetUserByEmail(email string) (*models.User, error) {
+	query := `SELECT id, email, password, role, created_at, updated_at FROM users WHERE email = $1`
+
+	row := r.db.QueryRow(query, email)
+
+	var user models.User
+	if err := row.Scan(&user.ID, &user.Email, &user.Password, &user.Role, &user.CreatedAt, &user.UpdatedAt); err != nil {
+		return nil, err
+	}
+
+	return &user, nil
 }
