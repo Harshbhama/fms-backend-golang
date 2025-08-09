@@ -1,5 +1,6 @@
 # Build stage
-FROM golang:1.21-alpine AS builder
+FROM golang:1.23-alpine AS builder
+
 
 WORKDIR /app
 
@@ -9,25 +10,27 @@ COPY go.mod go.sum ./
 # Download all dependencies
 RUN go mod download
 
+
+# Install fresh for hot reloading
+RUN go install github.com/pilu/fresh@latest
+
 # Copy the source code
 COPY . .
 
-# Build the application
-RUN CGO_ENABLED=0 GOOS=linux go build -o client-service .
-
 # Final stage
-FROM alpine:latest
+FROM golang:1.23-alpine
 
 WORKDIR /app
 
 # Install necessary packages
-RUN apk --no-cache add ca-certificates
+RUN apk --no-cache add ca-certificates \
+    && go install github.com/pilu/fresh@latest
 
-# Copy the binary from builder
-COPY --from=builder /app/client-service .
+# Copy the source code
+COPY . .
 
 # Expose port
 EXPOSE 8081
 
-# Command to run the executable
-CMD ["./client-service"]
+# Command to run the application with fresh
+CMD ["fresh"]

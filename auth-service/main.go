@@ -44,14 +44,20 @@ func main() {
 
 	authRepo := repositories.NewUserRepository(cfg.DB)
 	authService := services.NewUserService(authRepo)
+
+	clientRepo := repositories.NewClientRepository(cfg.DB)
+	clientService := services.NewClientService(clientRepo)
 	// authHandler := handlers.NewUserHandler(authService, logger)
 
 
 	router := gin.Default()
 
 	authRoutes := routes.NewSetupRoutes(router, logger, authService)
-	authRoutes.Setup()
+	clientRoutes := routes.NewSetupClientRoutes(router, logger, clientService)
 
+	authRoutes.Setup()
+	clientRoutes.SetupClient()
+	
 	port := ":8080"
 	if envPort := os.Getenv("PORT"); envPort != "" {
 		port = ":" + envPort
