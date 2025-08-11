@@ -51,14 +51,21 @@ func main() {
 	freelancerRepo := repositories.NewFreelancerRepository(cfg.DB)
 	freelancerService := services.NewFreelancerService(freelancerRepo)
 	
+	projectRepo := repositories.NewProjectRepository(cfg.DB)
+	projectService := services.NewProjectService(projectRepo)
+
+	// Initialize Gin router
+	
 
 	router := gin.Default()
 
 	authRoutes := routes.NewSetupRoutes(router, logger, authService)
 	clientRoutes := routes.NewSetupClientRoutes(router, logger, clientService)
+	projectRoutes := routes.NewSetupProjectRoutes(router, logger, projectService)
 
 	authRoutes.Setup()
 	clientRoutes.SetupClient()
+	projectRoutes.SetupProjectRoutes()
 
 	freelancerRoutes := routes.NewSetupFreelancerRoutes(router, logger, freelancerService)
 	freelancerRoutes.SetupFreelancer()
