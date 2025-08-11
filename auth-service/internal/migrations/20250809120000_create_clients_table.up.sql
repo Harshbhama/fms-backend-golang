@@ -42,3 +42,19 @@ CREATE TABLE client_freelancers (
     
     CONSTRAINT pk_client_freelancer PRIMARY KEY (client_id, freelancer_id)
 );
+
+
+
+CREATE TABLE freelancer_rates (
+    id BIGSERIAL PRIMARY KEY,
+    freelancer_id INT NOT NULL,
+    rate NUMERIC(10, 2) NOT NULL,
+    currency VARCHAR(3) NOT NULL, -- ISO 4217 format (e.g., USD, INR, EUR)
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_freelancer FOREIGN KEY (freelancer_id) REFERENCES freelancers(id) ON DELETE CASCADE
+);
+
+
+ALTER TABLE freelancer_rates
+ADD CONSTRAINT uq_freelancer_id UNIQUE (freelancer_id);

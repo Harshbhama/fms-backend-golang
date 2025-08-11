@@ -16,3 +16,7 @@ func NewFreelancerService(repo *repositories.FreelancerRepository) *FreelancerSe
 func (s *FreelancerService) CreateFreelancer(f *models.Freelancer) error {
 	return s.Repo.CreateFreelancer(f)
 }
+
+func (s *FreelancerService) CreateFreelancerRates(fr *models.FreelancerRates) error {
+	return s.Repo.CreateFreelancerRates(fr)
+}

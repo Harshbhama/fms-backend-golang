@@ -24,4 +24,5 @@ func NewSetupFreelancerRoutes(router *gin.Engine, logger *logrus.Logger, freelan
 func (r *FreelancerRoutes) SetupFreelancer() {
 	handler := handlers.NewFreelancerHandler(r.freelancerService, r.logger)
 	r.router.POST("/freelancers", handler.CreateFreelancer)
+	r.router.POST("/freelancer-rates", handler.CreateFreelancerRates)
 }

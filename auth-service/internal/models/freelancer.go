@@ -7,3 +7,10 @@ type Freelancer struct {
 	CreatedAt string `json:"created_at"`
 }
 
+type FreelancerRates struct {
+	ID        int64   `json:"id"`
+	FreelancerID int64 `json:"freelancer_id"`
+	Rate      float64 `json:"rate"`
+	Currency  string  `json:"currency"`
+	CreatedAt string  `json:"created_at"`
+}
