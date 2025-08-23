@@ -25,4 +25,5 @@ func (r *FreelancerRoutes) SetupFreelancer() {
 	handler := handlers.NewFreelancerHandler(r.freelancerService, r.logger)
 	r.router.POST("/freelancers", handler.CreateFreelancer)
 	r.router.POST("/freelancer-rates", handler.CreateFreelancerRates)
+	r.router.POST("/freelancer-project", handler.CreateFreelancerProject)
 }

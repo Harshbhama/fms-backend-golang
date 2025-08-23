@@ -27,3 +27,13 @@ func (r *FreelancerRepository) CreateFreelancerRates(fr *models.FreelancerRates)
 
 	return r.DB.QueryRow(query, fr.FreelancerID, fr.Rate, fr.Currency).Scan(&fr.ID)
 }
+
+func (r *FreelancerRepository) CreateFreelancerProject(fp *models.FreelancerProject) error {
+	query := `INSERT INTO freelancer_projects (freelancer_id, project_id, created_at)
+		VALUES ($1, $2, NOW()) RETURNING freelancer_id, project_id`
+	_, err := r.DB.Exec(query, fp.FreelancerId, fp.ProjectId)
+	if err != nil {
+		return err
+	}
+	return nil
+}

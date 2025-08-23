@@ -57,3 +57,21 @@ func (h *FreelancerHandler) CreateFreelancerRates(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, gin.H{"message": "Freelancer rates created successfully", "id": freelancerRates.ID})
 }
+
+func (h *FreelancerHandler) CreateFreelancerProject(c *gin.Context) {
+	var freelancerProject models.FreelancerProject
+	if err := c.ShouldBindJSON(&freelancerProject); err != nil {
+		h.logger.Error("Failed to bind JSON:", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body", "msg": err.Error()})
+		return
+	}
+
+	err := h.Service.CreateFreelancerProject(&freelancerProject)
+	if err != nil {
+		h.logger.Error("Failed to create freelancer project:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create freelancer project", "msg": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"message": "Freelancer project created successfully", "freelancer_id": freelancerProject.FreelancerId, "project_id": freelancerProject.ProjectId})
+}

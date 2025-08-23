@@ -23,3 +23,10 @@ func (s *ClientService) CreateClientFreelancer(clientFreelancer *models.ClientFr
 	// For now, we will just return nil
 	return s.clientRepository.CreateClientFreelancer(clientFreelancer)
 }
+
+func (s *ClientService) CreateClientProject(clientProject *models.ClientProject) error {
+	// This function is not implemented yet
+	// Here you would typically call a repository method to create the client-project relationship
+	// For now, we will just return nil
+	return s.clientRepository.CreateClientProject(clientProject)
+}

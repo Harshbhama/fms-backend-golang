@@ -20,3 +20,8 @@ func (s *FreelancerService) CreateFreelancer(f *models.Freelancer) error {
 func (s *FreelancerService) CreateFreelancerRates(fr *models.FreelancerRates) error {
 	return s.Repo.CreateFreelancerRates(fr)
 }
+
+func (s *FreelancerService) CreateFreelancerProject(fp *models.FreelancerProject) error {
+
+	return s.Repo.CreateFreelancerProject(fp)
+}

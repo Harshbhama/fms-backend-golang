@@ -30,6 +30,6 @@ func (r *SetupClientRoutes) SetupClient() {
 
 	r.Router.POST("/client", clientHandler.CreateClient)
 	r.Router.POST("/client-freelancer", clientHandler.CreateClientFreelancer)
-
+	r.Router.POST("/client-project", clientHandler.CreateClientProject)
 }
 

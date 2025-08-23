@@ -58,3 +58,38 @@ CREATE TABLE freelancer_rates (
 
 ALTER TABLE freelancer_rates
 ADD CONSTRAINT uq_freelancer_id UNIQUE (freelancer_id);
+
+
+
+
+CREATE TABLE projects (	
+    id BIGSERIAL PRIMARY KEY,
+    name TEXT NOT NULL UNIQUE,
+    status VARCHAR(50) NOT NULL, -- e.g., 'pending', 'in_progress', 'completed'
+    description TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+
+CREATE TABLE client_projects (
+    client_id BIGINT NOT NULL,
+    project_id INT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    
+    CONSTRAINT fk_client FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE,
+    CONSTRAINT fk_project FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+    
+    CONSTRAINT pk_client_project PRIMARY KEY (client_id, project_id)
+);
+
+
+CREATE TABLE freelancer_projects (
+    freelancer_id BIGINT NOT NULL,
+    project_id INT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    
+    CONSTRAINT fk_freelancer FOREIGN KEY (freelancer_id) REFERENCES freelancers(id) ON DELETE CASCADE,
+    CONSTRAINT fk_project FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+    
+    CONSTRAINT pk_freelancer_project PRIMARY KEY (freelancer_id, project_id)
+);
