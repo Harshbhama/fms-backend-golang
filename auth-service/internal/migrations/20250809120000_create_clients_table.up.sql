@@ -93,3 +93,53 @@ CREATE TABLE freelancer_projects (
     
     CONSTRAINT pk_freelancer_project PRIMARY KEY (freelancer_id, project_id)
 );
+
+
+
+CREATE TABLE freelancer_timesheet (
+    id SERIAL PRIMARY KEY,
+    freelancer_id INT NOT NULL,
+    project_id INT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    
+    CONSTRAINT fk_timesheet_freelancer FOREIGN KEY (freelancer_id) REFERENCES freelancers(id) ON DELETE CASCADE,
+    CONSTRAINT fk_timesheet_project FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
+);
+
+
+
+-- Shard 1
+CREATE TABLE timesheetmetadata1 (
+    metadata_id SERIAL PRIMARY KEY,
+    timesheet_id INT NOT NULL,
+    date DATE NOT NULL,
+    hours NUMERIC(5,2) NOT NULL,
+    status VARCHAR(50) NOT NULL,
+    remarks TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_timesheetmetadata1 FOREIGN KEY (timesheet_id) REFERENCES freelancer_timesheet(id) ON DELETE CASCADE
+);
+
+-- Shard 2
+CREATE TABLE timesheetmetadata2 (
+    metadata_id SERIAL PRIMARY KEY,
+    timesheet_id INT NOT NULL,
+    date DATE NOT NULL,
+    hours NUMERIC(5,2) NOT NULL,
+    status VARCHAR(50) NOT NULL,
+    remarks TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_timesheetmetadata2 FOREIGN KEY (timesheet_id) REFERENCES freelancer_timesheet(id) ON DELETE CASCADE
+);
+
+-- Shard 3
+CREATE TABLE timesheetmetadata3 (
+    metadata_id SERIAL PRIMARY KEY,
+    timesheet_id INT NOT NULL,
+    date DATE NOT NULL,
+    hours NUMERIC(5,2) NOT NULL,
+    status VARCHAR(50) NOT NULL,
+    remarks TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_timesheetmetadata3 FOREIGN KEY (timesheet_id) REFERENCES freelancer_timesheet(id) ON DELETE CASCADE
+);

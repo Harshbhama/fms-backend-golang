@@ -75,3 +75,46 @@ func (h *FreelancerHandler) CreateFreelancerProject(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, gin.H{"message": "Freelancer project created successfully", "freelancer_id": freelancerProject.FreelancerId, "project_id": freelancerProject.ProjectId})
 }
+
+func (h *FreelancerHandler) CreateFreelancerTimesheet(c *gin.Context) {
+	var timesheet models.FreelancerTimesheet
+	if err := c.ShouldBindJSON(&timesheet); err != nil {
+		h.logger.Error("Failed to bind JSON:", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body", "msg": err.Error()})
+		return
+	}
+	err := h.Service.CreateFreelancerTimesheet(&timesheet)
+	if err != nil {
+		h.logger.Error("Failed to create freelancer timesheet:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create freelancer timesheet", "msg": err.Error()})
+		return
+	}
+	// Here you would typically call a service method to handle the timesheet creation.
+	// For demonstration, we'll just log and return the received data.
+
+	h.logger.Info("Received timesheet:", timesheet)
+
+	c.JSON(http.StatusCreated, gin.H{"message": "Freelancer timesheet created successfully", "freelancer_id": timesheet.FreelancerID, "project_id": timesheet.ProjectID})
+}
+
+func (h *FreelancerHandler) CreateFreelancerTimesheetMetadata(c *gin.Context) {
+	var metadata models.FreelancerTimesheetMetadata
+	if err := c.ShouldBindJSON(&metadata); err != nil {
+		h.logger.Error("Failed to bind JSON:", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body", "msg": err.Error()})
+		return
+	}
+
+	err := h.Service.CreateFreelancerTimesheetMetadata(&metadata)
+	if err != nil {
+		h.logger.Error("Failed to create freelancer timesheet metadata:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create freelancer timesheet metadata", "msg": err.Error()})
+		return
+	}
+	// Here you would typically call a service method to handle the metadata creation.
+	// For demonstration, we'll just log and return the received data.
+
+	h.logger.Info("Received timesheet metadata:", metadata)
+
+	c.JSON(http.StatusCreated, gin.H{"message": "Freelancer timesheet metadata created successfully", "metadata_id": metadata.MetadataID, "timesheet_id": metadata.TimesheetID})
+}

@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -41,4 +42,8 @@ func HashPassword(password string) (string, error){
 func CheckPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
+}
+
+func GetSharedMetadataTableName(id int64) string {
+    return fmt.Sprintf("timesheetmetadata%d", id%4)
 }

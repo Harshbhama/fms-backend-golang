@@ -38,3 +38,4 @@ func (h *ProjectHandler) CreateProject(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, gin.H{"message": "Project created successfully", "id": project.ID})
 }
+

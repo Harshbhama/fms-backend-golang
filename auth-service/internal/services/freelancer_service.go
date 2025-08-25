@@ -25,3 +25,11 @@ func (s *FreelancerService) CreateFreelancerProject(fp *models.FreelancerProject
 
 	return s.Repo.CreateFreelancerProject(fp)
 }
+
+func (s *FreelancerService) CreateFreelancerTimesheet(ft *models.FreelancerTimesheet) error {
+	return s.Repo.CreateFreelancerTimesheet(ft)
+}
+
+func (s *FreelancerService) CreateFreelancerTimesheetMetadata(ftm *models.FreelancerTimesheetMetadata) error {
+	return s.Repo.CreateFreelancerTimesheetMetadata(ftm)
+}

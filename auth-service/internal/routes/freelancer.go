@@ -26,4 +26,6 @@ func (r *FreelancerRoutes) SetupFreelancer() {
 	r.router.POST("/freelancers", handler.CreateFreelancer)
 	r.router.POST("/freelancer-rates", handler.CreateFreelancerRates)
 	r.router.POST("/freelancer-project", handler.CreateFreelancerProject)
+	r.router.POST("/freelancer-timesheet", handler.CreateFreelancerTimesheet)
+	r.router.POST("/freelancer-timesheet-metadata", handler.CreateFreelancerTimesheetMetadata)
 }

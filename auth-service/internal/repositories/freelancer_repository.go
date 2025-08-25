@@ -2,8 +2,10 @@ package repositories
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/yourusername/auth-service/internal/models"
+	"github.com/yourusername/auth-service/internal/utils"
 )
 
 type FreelancerRepository struct {
@@ -36,4 +38,23 @@ func (r *FreelancerRepository) CreateFreelancerProject(fp *models.FreelancerProj
 		return err
 	}
 	return nil
+}
+
+func (r *FreelancerRepository) CreateFreelancerTimesheet(ft *models.FreelancerTimesheet) error {
+	query := `INSERT INTO freelancer_timesheet (freelancer_id, project_id, created_at)
+		VALUES ($1, $2, NOW()) RETURNING id`
+
+	return r.DB.QueryRow(query, ft.FreelancerID, ft.ProjectID).Scan(&ft.ID)
+}
+
+func (r *FreelancerRepository) CreateFreelancerTimesheetMetadata(ftm *models.FreelancerTimesheetMetadata) error {
+
+	table := utils.GetSharedMetadataTableName(ftm.TimesheetID)
+
+	query := fmt.Sprintf(`
+		INSERT INTO %s (timesheet_id, date, hours, status, remarks, created_at)
+		VALUES ($1, $2, $3, $4, $5, NOW()) RETURNING metadata_id
+	`, table)
+	
+	return r.DB.QueryRow(query, ftm.TimesheetID, ftm.Date, ftm.Hours, ftm.Status, ftm.Remarks).Scan(&ftm.MetadataID)
 }
