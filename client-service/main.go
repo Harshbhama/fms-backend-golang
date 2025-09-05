@@ -5,18 +5,30 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
 )
 
 var redisClient *redis.Client
- 
+
 func main() {
 	// Initialize Redis
 	initRedis()
 
 	r := gin.Default()
+
+	// Enable CORS
+	r.Use(cors.New(cors.Config{
+    AllowAllOrigins:  true, // 👈 this enables all origins
+    AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+    AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+    ExposeHeaders:    []string{"Content-Length"},
+    AllowCredentials: false, // ⚠️ must be false when AllowAllOrigins is true
+    MaxAge:           12 * time.Hour,
+	}))
 
 	// Routes
 	r.GET("/protected", authMiddleware(), protectedHandler)

@@ -3,10 +3,10 @@ package main
 import (
 	"context"
 	"log"
-	// "net/http"
 	"os"
 	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
@@ -28,53 +28,55 @@ var db *gorm.DB
 var redisClient *redis.Client
 
 func main() {
-	// Initialize database
-	// initDB()
-	// // Initialize Redis
-	// initRedis()
-
 	// Initialize config (includes DB connection)
 	cfg, err := config.NewConfig()
 	logger := logrus.New()
 	if err != nil {
 		logger.Fatalf("failed to load config or connect to DB: %v", err)
 	}
-	print(cfg)
-	
 
 	authRepo := repositories.NewUserRepository(cfg.DB)
 	authService := services.NewUserService(authRepo)
 
 	clientRepo := repositories.NewClientRepository(cfg.DB)
 	clientService := services.NewClientService(clientRepo)
-	// authHandler := handlers.NewUserHandler(authService, logger)
+
 	freelancerRepo := repositories.NewFreelancerRepository(cfg.DB)
 	freelancerService := services.NewFreelancerService(freelancerRepo)
-	
+
 	projectRepo := repositories.NewProjectRepository(cfg.DB)
 	projectService := services.NewProjectService(projectRepo)
 
 	// Initialize Gin router
-	
-
 	router := gin.Default()
 
+	// ✅ Enable CORS (allow all origins)
+	router.Use(cors.New(cors.Config{
+		AllowAllOrigins: true, // allow requests from anywhere
+		AllowMethods:    []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:    []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:   []string{"Content-Length"},
+		// ⚠️ Must be false when AllowAllOrigins = true
+		AllowCredentials: false,
+		MaxAge:           12 * time.Hour,
+	}))
+
+	// Setup routes
 	authRoutes := routes.NewSetupRoutes(router, logger, authService)
 	clientRoutes := routes.NewSetupClientRoutes(router, logger, clientService)
 	projectRoutes := routes.NewSetupProjectRoutes(router, logger, projectService)
+	freelancerRoutes := routes.NewSetupFreelancerRoutes(router, logger, freelancerService)
 
 	authRoutes.Setup()
 	clientRoutes.SetupClient()
 	projectRoutes.SetupProjectRoutes()
-
-	freelancerRoutes := routes.NewSetupFreelancerRoutes(router, logger, freelancerService)
 	freelancerRoutes.SetupFreelancer()
-	
+
+	// Start server
 	port := ":8080"
 	if envPort := os.Getenv("PORT"); envPort != "" {
 		port = ":" + envPort
 	}
-
 	router.Run(port)
 }
 
@@ -117,4 +119,3 @@ func initRedis() {
 		log.Fatal("Failed to connect to Redis:", err)
 	}
 }
-
