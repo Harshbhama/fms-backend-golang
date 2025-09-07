@@ -9,6 +9,7 @@ type User struct {
 	Role      string    `json:"role" binding:"required"` // Client, Agency, Freelancer
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+	Token		 string    `json:"token,omitempty"`
 }
 
 type UserLogin struct {

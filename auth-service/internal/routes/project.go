@@ -5,6 +5,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/yourusername/auth-service/internal/handlers"
 	"github.com/yourusername/auth-service/internal/services"
+	"github.com/yourusername/auth-service/internal/utils"
 )
 
 type ProjectRoutes struct {
@@ -23,5 +24,7 @@ func NewSetupProjectRoutes(router *gin.Engine, logger *logrus.Logger, projectSer
 
 func (r *ProjectRoutes) SetupProjectRoutes() {
 	handler := handlers.NewProjectHandler(r.projectService, r.logger)
-	r.router.POST("/projects", handler.CreateProject)
+	authMiddleware := utils.AuthMiddleware()
+
+	r.router.POST("/projects", authMiddleware, handler.CreateProject)
 }

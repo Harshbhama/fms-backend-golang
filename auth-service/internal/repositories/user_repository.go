@@ -63,6 +63,11 @@ func (r *UserRepository) LoginUser(loginInput *models.UserLogin) (*models.User, 
 			return nil, err
 		}
 		print("here")
+		jwtToken, err := utils.GenerateJWT(users.ID, 72) // Token valid for 72 hours
+		if err != nil {
+			return nil, err
+		}
+		users.Token = jwtToken 
 		return &users, nil
 	} else{
 		return nil, errors.New("password is not correct")

@@ -7,6 +7,7 @@ import (
 	// "github.com/harshbhama/go-gin-postgres-app/internal/repositories"
 	"github.com/yourusername/auth-service/internal/services"
 	"github.com/sirupsen/logrus"
+	"github.com/yourusername/auth-service/internal/utils"
 )
 
 // SetupRoutes sets up all the API routes
@@ -27,9 +28,12 @@ func NewSetupClientRoutes(router *gin.Engine, logger *logrus.Logger, clientServi
 func (r *SetupClientRoutes) SetupClient() {
 	
 	clientHandler := handlers.NewClientHandler(r.ClientService, r.Logger)
+	authMiddleware := utils.AuthMiddleware()
 
-	r.Router.POST("/client", clientHandler.CreateClient)
-	r.Router.POST("/client-freelancer", clientHandler.CreateClientFreelancer)
-	r.Router.POST("/client-project", clientHandler.CreateClientProject)
+	r.Router.POST("/client", authMiddleware, clientHandler.CreateClient)
+	r.Router.POST("/client-freelancer", authMiddleware, clientHandler.CreateClientFreelancer)
+	r.Router.POST("/client-project", authMiddleware, clientHandler.CreateClientProject)
 }
+
+
 

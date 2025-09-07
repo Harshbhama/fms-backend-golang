@@ -5,6 +5,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/yourusername/auth-service/internal/handlers"
 	"github.com/yourusername/auth-service/internal/services"
+	"github.com/yourusername/auth-service/internal/utils"
 )
 
 type FreelancerRoutes struct {
@@ -23,9 +24,11 @@ func NewSetupFreelancerRoutes(router *gin.Engine, logger *logrus.Logger, freelan
 
 func (r *FreelancerRoutes) SetupFreelancer() {
 	handler := handlers.NewFreelancerHandler(r.freelancerService, r.logger)
-	r.router.POST("/freelancers", handler.CreateFreelancer)
-	r.router.POST("/freelancer-rates", handler.CreateFreelancerRates)
-	r.router.POST("/freelancer-project", handler.CreateFreelancerProject)
-	r.router.POST("/freelancer-timesheet", handler.CreateFreelancerTimesheet)
-	r.router.POST("/freelancer-timesheet-metadata", handler.CreateFreelancerTimesheetMetadata)
+	authMiddleware := utils.AuthMiddleware()
+
+	r.router.POST("/freelancers", authMiddleware, handler.CreateFreelancer)
+	r.router.POST("/freelancer-rates", authMiddleware, handler.CreateFreelancerRates)
+	r.router.POST("/freelancer-project", authMiddleware, handler.CreateFreelancerProject)
+	r.router.POST("/freelancer-timesheet", authMiddleware, handler.CreateFreelancerTimesheet)
+	r.router.POST("/freelancer-timesheet-metadata", authMiddleware, handler.CreateFreelancerTimesheetMetadata)
 }

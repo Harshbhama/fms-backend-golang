@@ -3,6 +3,10 @@ package utils
 import (
 	"fmt"
 	"golang.org/x/crypto/bcrypt"
+	"time"
+	"github.com/golang-jwt/jwt/v5"
+		"github.com/gin-gonic/gin"
+		"strings"
 )
 
 
@@ -46,4 +50,73 @@ func CheckPasswordHash(password, hash string) bool {
 
 func GetSharedMetadataTableName(id int64) string {
     return fmt.Sprintf("timesheetmetadata%d", id%4)
+}
+
+
+
+var jwtSecret = []byte("abcd") // Replace with your secret
+
+func GenerateJWT(userID uint, expiryHours int) (string, error) {
+	claims := jwt.MapClaims{
+		"user_id": userID,
+		"exp":     time.Now().Add(time.Duration(expiryHours) * time.Hour).Unix(),
+		"secret":  string(jwtSecret),
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString(jwtSecret)
+}
+
+func ValidateJWT(tokenString string) (int64, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method")
+		}
+		return jwtSecret, nil
+	})
+	if err != nil || !token.Valid {
+		return 0, fmt.Errorf("invalid token")
+	}
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return 0, fmt.Errorf("invalid claims")
+	}
+	userIDFloat, ok := claims["user_id"].(float64)
+	if !ok {
+		return 0, fmt.Errorf("user_id not found in token")
+	}
+	return int64(userIDFloat), nil
+}
+
+
+
+
+func AuthMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		authHeader := c.GetHeader("Authorization")
+		if authHeader == "" {
+			c.JSON(401, gin.H{"error": "Authorization header missing"})
+			c.Abort()
+			return
+		}
+
+		// Assuming the format is: "Bearer <token>"
+		tokenParts := strings.Split(authHeader, " ")
+		if len(tokenParts) != 2 || tokenParts[0] != "Bearer" {
+			c.JSON(401, gin.H{"error": "Invalid Authorization header format"})
+			c.Abort()
+			return
+		}
+
+		userID, err := ValidateJWT(tokenParts[1])
+		if err != nil {
+			c.JSON(401, gin.H{"error": "Invalid token: " + err.Error()})
+			c.Abort()
+			return
+		}
+
+		// Store userID in context for further handlers to use
+		c.Set("userID", userID)
+
+		c.Next()
+	}
 }
