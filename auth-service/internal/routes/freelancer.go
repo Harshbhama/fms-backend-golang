@@ -26,7 +26,7 @@ func (r *FreelancerRoutes) SetupFreelancer() {
 	handler := handlers.NewFreelancerHandler(r.freelancerService, r.logger)
 	authMiddleware := utils.AuthMiddleware()
 
-	r.router.POST("/freelancers", authMiddleware, handler.CreateFreelancer)
+	r.router.POST("/freelancers", handler.CreateFreelancer)
 	r.router.POST("/freelancer-rates", authMiddleware, handler.CreateFreelancerRates)
 	r.router.POST("/freelancer-project", authMiddleware, handler.CreateFreelancerProject)
 	r.router.POST("/freelancer-timesheet", authMiddleware, handler.CreateFreelancerTimesheet)
