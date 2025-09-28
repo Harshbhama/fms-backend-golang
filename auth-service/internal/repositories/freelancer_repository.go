@@ -3,6 +3,7 @@ package repositories
 import (
 	"database/sql"
 	"fmt"
+	"errors"
 
 	"github.com/yourusername/auth-service/internal/models"
 	"github.com/yourusername/auth-service/internal/utils"
@@ -59,24 +60,38 @@ func (r *FreelancerRepository) CreateFreelancerTimesheetMetadata(ftm *models.Fre
 	return r.DB.QueryRow(query, ftm.TimesheetID, ftm.Date, ftm.Hours, ftm.Status, ftm.Remarks).Scan(&ftm.MetadataID)
 }
 
-func (r *FreelancerRepository) GetFreelancerByClientID(id uint) (*models.FreelancerClientJoin, error) {
-	query := `SELECT freelancer_id, first_name, last_name, fl.created_at, email,  client_id
+func (r *FreelancerRepository) GetFreelancerByClientID(id uint) (*[]models.FreelancerClientJoin, error) {
+	query := `SELECT freelancer_id, first_name, last_name, fl.created_at, email, client_id
 		FROM client_freelancers cl
 		INNER JOIN freelancers fl 
 			ON fl.id = cl.freelancer_id
 		INNER JOIN users u 
 			ON u.id = fl.id
-		Where client_id = $1`
-	row := r.DB.QueryRow(query, id)
+		WHERE client_id = $1`
 
-	var freelancer models.FreelancerClientJoin
-	err := row.Scan(&freelancer.FreelancerID, &freelancer.FirstName, &freelancer.LastName, &freelancer.CreatedAt, &freelancer.Email, &freelancer.ClientID)
+	rows, err := r.DB.Query(query, id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil // No freelancer found with the given ID
+		return nil, err
+	}
+	defer rows.Close()
+
+	var freelancers []models.FreelancerClientJoin
+
+	for rows.Next() {
+		var f models.FreelancerClientJoin
+		if err := rows.Scan(&f.FreelancerID, &f.FirstName, &f.LastName, &f.CreatedAt, &f.Email, &f.ClientID); err != nil {
+			return nil, err
 		}
-		return nil, err // Some other error occurred
+		freelancers = append(freelancers, f)
 	}
 
-	return &freelancer, nil
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	if len(freelancers) == 0 {
+		return nil, errors.New("no rows found")
+	}
+
+	return &freelancers, nil
 }

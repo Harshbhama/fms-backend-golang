@@ -123,6 +123,7 @@ func (h *FreelancerHandler) GetFreelancerForClient(c *gin.Context) {
 		return
 	}
 	freelancers, err := h.Service.GetFreelancerByClientID(uint(id))
+	h.logger.Info("Freelancers fetched for client ID:", id, freelancers)
 	if err != nil {
 		print("Failed to get freelancers for client--------------------------------", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get freelancers for client", "msg": err.Error()})
@@ -130,7 +131,7 @@ func (h *FreelancerHandler) GetFreelancerForClient(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message":   "Freelancers fetched successfully",
+		"message":   "Freelancers fetched successfully12",
 		"freelancers": freelancers,
 	})
 }
