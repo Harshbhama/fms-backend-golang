@@ -33,3 +33,6 @@ func (s *FreelancerService) CreateFreelancerTimesheet(ft *models.FreelancerTimes
 func (s *FreelancerService) CreateFreelancerTimesheetMetadata(ftm *models.FreelancerTimesheetMetadata) error {
 	return s.Repo.CreateFreelancerTimesheetMetadata(ftm)
 }
+func (s *FreelancerService) GetFreelancerByClientID(id uint) (*models.FreelancerClientJoin, error) {
+	return s.Repo.GetFreelancerByClientID(id)
+}

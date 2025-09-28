@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"net/http"
-
+	"strconv"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"github.com/yourusername/auth-service/internal/models"
@@ -111,10 +111,26 @@ func (h *FreelancerHandler) CreateFreelancerTimesheetMetadata(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create freelancer timesheet metadata", "msg": err.Error()})
 		return
 	}
-	// Here you would typically call a service method to handle the metadata creation.
-	// For demonstration, we'll just log and return the received data.
-
 	h.logger.Info("Received timesheet metadata:", metadata)
 
 	c.JSON(http.StatusCreated, gin.H{"message": "Freelancer timesheet metadata created successfully", "metadata_id": metadata.MetadataID, "timesheet_id": metadata.TimesheetID})
+}
+func (h *FreelancerHandler) GetFreelancerForClient(c *gin.Context) {
+	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		h.logger.Error("Failed to parse client ID:", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid client ID"})
+		return
+	}
+	freelancers, err := h.Service.GetFreelancerByClientID(uint(id))
+	if err != nil {
+		print("Failed to get freelancers for client--------------------------------", err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get freelancers for client", "msg": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message":   "Freelancers fetched successfully",
+		"freelancers": freelancers,
+	})
 }

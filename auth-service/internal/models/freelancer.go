@@ -32,3 +32,12 @@ type FreelancerTimesheetMetadata struct {
 	Remarks			string  `json:"remarks"`
 	CreatedAt   string  `json:"created_at"`
 }
+
+type FreelancerClientJoin struct {
+	FreelancerID int64  `json:"freelancer_id"`
+	FirstName    string `json:"first_name"`
+	LastName     string `json:"last_name"`
+	ClientID     int64  `json:"client_id"`
+	CreatedAt		string `json:"created_at"`
+	Email				string `json:"email"`
+}
