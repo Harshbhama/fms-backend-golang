@@ -7,6 +7,9 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 		"github.com/gin-gonic/gin"
 		"strings"
+	"github.com/sendgrid/sendgrid-go"
+	"github.com/sendgrid/sendgrid-go/helpers/mail"
+	"log"
 )
 
 
@@ -119,4 +122,36 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		c.Next()
 	}
+}
+
+func SendEmail(toEmail, url string) error {
+	from := mail.NewEmail("Your App Name", "harshbhama97@gmail.com")
+	subject := "Action Required"
+	to := mail.NewEmail("", toEmail)
+	plainTextContent := "Please visit the following link: " + url
+	htmlContent := "<p>Please visit the following link: <a href=\"" + url + "\">" + url + "</a></p>"
+	message := mail.NewSingleEmail(from, subject, to, plainTextContent, htmlContent)
+	client := sendgrid.NewSendClient("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")
+	response, err := client.Send(message)
+
+	// Check for client or network error first
+	if err != nil {
+		log.Printf("Error sending email: %v\n", err)
+		return err
+	}
+
+	// Log full response from SendGrid for debugging
+	log.Println("SendGrid Response:")
+	log.Printf("Status Code: %d\n", response.StatusCode)
+	log.Printf("Body: %s\n", response.Body)
+	log.Printf("Headers: %v\n", response.Headers)
+
+	// Check if SendGrid accepted the message
+	if response.StatusCode >= 200 && response.StatusCode < 300 {
+		fmt.Println("✅ Email accepted by SendGrid!")
+	} else {
+		fmt.Println("⚠️ SendGrid did not accept the email, check logs above.")
+	}
+
+	return nil
 }
