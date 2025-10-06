@@ -61,6 +61,7 @@ services:
       - DB_PORT=5432
       - REDIS_ADDR=redis:6379
       - REDIS_PASSWORD=redispass
+      - SENDGRID_API_KEY=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
     depends_on:
       - postgres
       - redis

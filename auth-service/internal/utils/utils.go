@@ -10,6 +10,7 @@ import (
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 	"log"
+	"os"
 )
 
 
@@ -131,7 +132,15 @@ func SendEmail(toEmail, url string) error {
 	plainTextContent := "Please visit the following link: " + url
 	htmlContent := "<p>Please visit the following link: <a href=\"" + url + "\">" + url + "</a></p>"
 	message := mail.NewSingleEmail(from, subject, to, plainTextContent, htmlContent)
-	client := sendgrid.NewSendClient("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")
+
+	key := os.Getenv("SENDGRID_API_KEY")
+	if key == "" {
+			log.Fatal("SENDGRID_API_KEY is missing! Check your environment variables.")
+	}
+ 
+
+
+	client := sendgrid.NewSendClient(os.Getenv("SENDGRID_API_KEY"))
 	response, err := client.Send(message)
 
 	// Check for client or network error first
