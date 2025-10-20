@@ -33,11 +33,25 @@ func (r *FreelancerRepository) CreateFreelancerRates(fr *models.FreelancerRates)
 
 func (r *FreelancerRepository) CreateFreelancerProject(fp *models.FreelancerProject) error {
 	query := `INSERT INTO freelancer_projects (freelancer_id, project_id, created_at)
-		VALUES ($1, $2, NOW()) RETURNING freelancer_id, project_id`
-	_, err := r.DB.Exec(query, fp.FreelancerId, fp.ProjectId)
+	          VALUES ($1, $2, NOW())`
+
+	tx, err := r.DB.Begin()
 	if err != nil {
 		return err
 	}
+	defer tx.Rollback()
+
+	for _, freelancerID := range fp.FreelancerIds {
+		_, err := tx.Exec(query, freelancerID, fp.ProjectId)
+		if err != nil {
+			return err
+		}
+	}
+
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+
 	return nil
 }
 

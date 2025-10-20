@@ -73,7 +73,7 @@ func (h *FreelancerHandler) CreateFreelancerProject(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message": "Freelancer project created successfully", "freelancer_id": freelancerProject.FreelancerId, "project_id": freelancerProject.ProjectId})
+	c.JSON(http.StatusCreated, gin.H{"message": "Freelancer project created successfully", "freelancer_id": freelancerProject.FreelancerIds, "project_id": freelancerProject.ProjectId})
 }
 
 func (h *FreelancerHandler) CreateFreelancerTimesheet(c *gin.Context) {
