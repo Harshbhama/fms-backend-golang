@@ -54,7 +54,7 @@ func (h *FreelancerHandler) CreateFreelancerRates(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create freelancer rates", "msg": err.Error()})
 		return
 	}
-
+ 
 	c.JSON(http.StatusCreated, gin.H{"message": "Freelancer rates created successfully", "id": freelancerRates.ID})
 }
 

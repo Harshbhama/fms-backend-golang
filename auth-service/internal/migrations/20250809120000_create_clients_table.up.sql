@@ -143,3 +143,18 @@ CREATE TABLE timesheetmetadata3 (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_timesheetmetadata3 FOREIGN KEY (timesheet_id) REFERENCES freelancer_timesheet(id) ON DELETE CASCADE
 );
+
+
+
+
+
+
+ALTER TABLE projects
+ADD COLUMN category TEXT,
+ADD COLUMN priority TEXT,
+ADD COLUMN required_skills TEXT[],
+ADD COLUMN custom_skills TEXT[],
+ADD COLUMN detailed_requirements TEXT,
+ADD COLUMN expected_deliverables TEXT,
+ADD COLUMN assignment_timing TEXT,
+ADD COLUMN timeline JSONB;
