@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"net/http"
-	// "strconv"
+	"strconv"
 
 	// "github.com/gin-gonic/gin"
 	// "github.com/yourusername/auth-service/internal/models"
@@ -79,4 +79,20 @@ func (h *ClientHandler) CreateClientProject(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusCreated, gin.H{"message": "Client-Project relationship created successfully", "client_id": clientProject.ClientId, "project_id": clientProject.ProjectId})
+}
+
+func (h *ClientHandler) GetClientProjects(c *gin.Context) {
+	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		h.logger.Error("Failed to parse client ID:", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid client ID"})
+		return
+	}
+	projects, err := h.clientService.GetProjectsByClientId(uint(id))
+	if err != nil {
+		h.logger.Error("Failed to get projects by client ID:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get projects by client ID", "msg": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"projects": projects})
 }

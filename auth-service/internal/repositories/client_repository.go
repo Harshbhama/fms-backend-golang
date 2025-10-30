@@ -48,3 +48,50 @@ func (r *ClientRepository) CreateClientProject(clientProject *models.ClientProje
 	}
 	return nil
 }
+
+func (r *ClientRepository) GetProjectsByClientId(id uint) (*[] models.ClientProjects, error) {
+	query := `
+	SELECT 
+		cp.client_id, 
+		cp.project_id, 
+		COALESCE(p.status, '') AS status,
+		COALESCE(p.description, '') AS description,
+		COALESCE(p.category, '') AS category,
+		COALESCE(p.priority, '') AS priority,
+		COALESCE(p.required_skills, '{}') AS required_skills,
+		COALESCE(p.custom_skills, '{}') AS custom_skills,
+		COALESCE(p.detailed_requirements, '') AS detailed_requirements,
+		COALESCE(p.expected_deliverables, '') AS expected_deliverables,
+		COALESCE(p.assignment_timing, '') AS assignment_timing,
+		COALESCE(p.timeline, '{}'::jsonb) AS timeline
+	FROM client_projects cp
+	INNER JOIN projects p ON cp.project_id = p.id
+	WHERE cp.client_id = $1
+`
+
+
+	rows, err := r.db.Query(query, id)
+
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var projects []models.ClientProjects
+	
+	for rows.Next() {
+		var project models.ClientProjects
+		err := rows.Scan(&project.ClientID, &project.ProjectID, &project.Status, &project.Description, &project.Category,
+			&project.Priority, &project.RequiredSkills, &project.CustomSkills, &project.DetailedRequirements,
+			&project.ExpectedDeliverables, &project.AssignmentTiming, &project.Timeline)
+		if err != nil {
+			return nil, err
+		}
+		projects = append(projects, project)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	return &projects, nil
+	
+}

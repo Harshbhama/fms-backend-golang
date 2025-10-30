@@ -33,6 +33,7 @@ func (r *SetupClientRoutes) SetupClient() {
 	r.Router.POST("/client", clientHandler.CreateClient)
 	r.Router.POST("/client-freelancer", clientHandler.CreateClientFreelancer)
 	r.Router.POST("/client-project", authMiddleware, clientHandler.CreateClientProject)
+	r.Router.GET("/projects-by-client/:id", authMiddleware, clientHandler.GetClientProjects)
 }
 
 

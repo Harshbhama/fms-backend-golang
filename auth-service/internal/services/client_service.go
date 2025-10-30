@@ -30,3 +30,7 @@ func (s *ClientService) CreateClientProject(clientProject *models.ClientProject)
 	// For now, we will just return nil
 	return s.clientRepository.CreateClientProject(clientProject)
 }
+
+func (s *ClientService) GetProjectsByClientId(id uint) (*[] models.ClientProjects, error) {
+	return s.clientRepository.GetProjectsByClientId(id)
+}
