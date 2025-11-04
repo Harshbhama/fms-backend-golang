@@ -27,4 +27,6 @@ func (r *ProjectRoutes) SetupProjectRoutes() {
 	authMiddleware := utils.AuthMiddleware()
 
 	r.router.POST("/projects", authMiddleware, handler.CreateProject)
+	r.router.GET("/projects/search", authMiddleware, handler.SearchProjects)
 }
+

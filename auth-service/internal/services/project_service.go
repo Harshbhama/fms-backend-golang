@@ -16,3 +16,7 @@ func NewProjectService(repo *repositories.ProjectRepository) *ProjectService {
 func (s *ProjectService) CreateProject(p *models.Projects) error {
 	return s.Repo.CreateProject(p)
 }
+
+func (s *ProjectService) SearchProjects(keyword string) ([]models.Projects, error) {
+	return s.Repo.SearchProjects(keyword)
+}

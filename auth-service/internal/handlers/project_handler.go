@@ -39,3 +39,16 @@ func (h *ProjectHandler) CreateProject(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"message": "Project created successfully", "id": project.ID})
 }
 
+func (h *ProjectHandler) SearchProjects(c *gin.Context) {
+	keyword := c.Query("keyword")
+	h.logger.Infof("Searching projects with keyword: %s", keyword)
+
+	projects, err := h.Service.SearchProjects(keyword)
+	if err != nil {
+		h.logger.Error("Failed to search projects:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to search projects", "msg": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"projects": projects})
+}

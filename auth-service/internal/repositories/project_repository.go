@@ -58,3 +58,30 @@ func (r *ProjectRepository) CreateProject(p *models.Projects) error {
 		timelineJSON,
 	).Scan(&p.ID)
 }
+
+func (r *ProjectRepository) SearchProjects(searchTerm string) ([]models.Projects, error) {
+	query := `
+		SELECT id, name, description, status, created_at 
+		FROM projects 
+		WHERE name ILIKE '%' || $1 || '%'
+		ORDER BY created_at DESC;
+	`
+
+	rows, err := r.DB.Query(query, searchTerm)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var projects []models.Projects
+	for rows.Next() {
+		var p models.Projects
+		err := rows.Scan(&p.ID, &p.Name, &p.Description, &p.Status, &p.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		projects = append(projects, p)
+	}
+	return projects, nil
+}
+
