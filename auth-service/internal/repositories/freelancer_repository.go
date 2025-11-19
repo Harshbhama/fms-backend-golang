@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"errors"
-
+	"github.com/lib/pq"
 	"github.com/yourusername/auth-service/internal/models"
 	"github.com/yourusername/auth-service/internal/utils"
 )
@@ -18,10 +18,37 @@ func NewFreelancerRepository(db *sql.DB) *FreelancerRepository {
 }
 
 func (r *FreelancerRepository) CreateFreelancer(f *models.Freelancer) error {
-	query := `INSERT INTO freelancers (id, first_name, last_name, created_at)
-		VALUES ($1, $2, $3, NOW()) RETURNING id`
+	query := `
+	INSERT INTO freelancers (
+		id,
+		first_name,
+		last_name,
+		professional_title,
+		professional_bio,
+		location,
+		hourly_rate,
+		experience_level,
+		availability,
+		skills,
+		created_at
+	)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW())
+	RETURNING id
+`
 
-	return r.DB.QueryRow(query, f.ID, f.Firstname, f.Lastname).Scan(&f.ID)
+return r.DB.QueryRow(
+	query,
+	f.ID,
+	f.Firstname,
+	f.Lastname,
+	f.ProfessionalTitle,
+	f.ProfessionalBio,
+	f.Location,
+	f.HourlyRate,
+	f.ExperienceLevel,
+	f.Availability,
+	pq.Array(f.Skills), // use pq.Array for []string
+).Scan(&f.ID)
 }
 
 func (r *FreelancerRepository) CreateFreelancerRates(fr *models.FreelancerRates) error {

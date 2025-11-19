@@ -3,10 +3,17 @@ package models
 
 
 type Freelancer struct {
-	ID    int64 `json:"id"`
-	Firstname  string `json:"first_name"`
-	Lastname string `json:"last_name"`
-	CreatedAt string `json:"created_at"`
+	ID                int64    `json:"id"`
+	 Firstname         *string  `json:"first_name,omitempty"`
+    Lastname          *string  `json:"last_name,omitempty"`
+    ProfessionalTitle *string  `json:"professional_title,omitempty"`
+    ProfessionalBio   *string  `json:"professional_bio,omitempty"`
+    Location          *string  `json:"location,omitempty"`
+    HourlyRate        *float64 `json:"hourly_rate,omitempty"`
+    ExperienceLevel   *string  `json:"experience_level,omitempty"`
+    Availability      *string  `json:"availability,omitempty"`
+    Skills            []string `json:"skills,omitempty"`
+    CreatedAt         *string  `json:"created_at,omitempty"`
 }
 
 type FreelancerRates struct {
