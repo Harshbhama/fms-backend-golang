@@ -24,10 +24,9 @@ func (r *AgencyRepository) CreateAgency(a *models.Agency) error {
 		location
 	)
 	VALUES ($1, $2, $3, $4, $5, $6)
-	RETURNING id
 `
 
-	return r.DB.QueryRow(
+	_, err := r.DB.Exec(
 		query,
 		a.ID,
 		a.Name,
@@ -35,5 +34,6 @@ func (r *AgencyRepository) CreateAgency(a *models.Agency) error {
 		a.Website,
 		a.Description,
 		a.Location,
-	).Scan(&a.ID)
+	)
+	return err
 }
