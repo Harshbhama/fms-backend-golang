@@ -101,6 +101,10 @@ func (r *FreelancerRepository) CreateFreelancerTimesheetMetadata(ftm *models.Fre
 }
 
 func (r *FreelancerRepository) GetFreelancerByClientID(id uint, search string) (*[]models.FreelancerClientJoin, error) {
+	// Note: For optimal performance, ensure database indexes exist on:
+	// - client_freelancers.client_id
+	// - freelancers(first_name, last_name, location, professional_title)
+	// - users.email
 	query := `SELECT cl.freelancer_id, fl.first_name, fl.last_name, fl.professional_title, 
 		fl.professional_bio, fl.location, fl.hourly_rate, fl.experience_level, 
 		fl.availability, fl.skills, cl.client_id, fl.created_at, u.email
@@ -115,6 +119,10 @@ func (r *FreelancerRepository) GetFreelancerByClientID(id uint, search string) (
 	var err error
 
 	if search != "" {
+		// Validate search input length to prevent abuse
+		if len(search) > 100 {
+			return nil, fmt.Errorf("search query too long (max 100 characters)")
+		}
 		query += ` AND (
 			LOWER(fl.first_name) LIKE LOWER($2) OR 
 			LOWER(fl.last_name) LIKE LOWER($2) OR 
@@ -126,6 +134,7 @@ func (r *FreelancerRepository) GetFreelancerByClientID(id uint, search string) (
 				WHERE LOWER(skill) LIKE LOWER($2)
 			)
 		)`
+		// Safe: searchPattern is passed as parameterized query argument, preventing SQL injection
 		searchPattern := "%" + search + "%"
 		rows, err = r.DB.Query(query, id, searchPattern)
 	} else {

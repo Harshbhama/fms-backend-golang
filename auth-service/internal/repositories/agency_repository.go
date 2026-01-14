@@ -64,6 +64,9 @@ func (r *AgencyRepository) CreateAgency(a *models.Agency) error {
 }
 
 func (r *AgencyRepository) GetAgencyByClientID(id uint, search string) (*[]models.AgencyClientJoin, error) {
+	// Note: For optimal performance, ensure database indexes exist on:
+	// - client_agencies.client_id
+	// - agency(name, email, location, description)
 	query := `SELECT ca.agency_id, ag.name, ag.email, ag.website, ag.description, ag.location, 
 		ag.team_size, ag.founded_year, ag.min_budget, ag.avg_hourly_rate, ag.specializations, 
 		ag.services, ag.phone, ag.address, ag.certifications, ag.languages, ca.client_id, ca.created_at
@@ -76,6 +79,10 @@ func (r *AgencyRepository) GetAgencyByClientID(id uint, search string) (*[]model
 	var err error
 
 	if search != "" {
+		// Validate search input length to prevent abuse
+		if len(search) > 100 {
+			return nil, sql.ErrNoRows
+		}
 		query += ` AND (
 			LOWER(ag.name) LIKE LOWER($2) OR 
 			LOWER(ag.email) LIKE LOWER($2) OR 
@@ -90,6 +97,7 @@ func (r *AgencyRepository) GetAgencyByClientID(id uint, search string) (*[]model
 				WHERE LOWER(service) LIKE LOWER($2)
 			)
 		)`
+		// Safe: searchPattern is passed as parameterized query argument, preventing SQL injection
 		searchPattern := "%" + search + "%"
 		rows, err = r.DB.Query(query, id, searchPattern)
 	} else {
