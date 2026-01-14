@@ -10,6 +10,3 @@ CREATE TABLE agencies (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_agency_user FOREIGN KEY (id) REFERENCES users(id) ON DELETE CASCADE
 );
-
--- +goose Down
-DROP TABLE IF EXISTS agencies;
