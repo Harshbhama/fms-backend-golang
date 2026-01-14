@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
 	"github.com/lib/pq"
 	"github.com/yourusername/auth-service/internal/models"
@@ -155,7 +154,7 @@ func (r *FreelancerRepository) GetFreelancerByClientID(id uint, search string) (
 	}
 
 	if len(freelancers) == 0 {
-		return nil, errors.New("no rows found")
+		return nil, sql.ErrNoRows
 	}
 
 	return &freelancers, nil
