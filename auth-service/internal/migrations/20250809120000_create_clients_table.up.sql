@@ -186,6 +186,19 @@ ALTER TABLE agency
   DROP CONSTRAINT agency_location_check;
 
 
+
+CREATE TABLE client_agencies (
+    client_id BIGINT NOT NULL,
+    agency_id INT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_client_agency FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE,
+    CONSTRAINT fk_agency FOREIGN KEY (agency_id) REFERENCES agency(id) ON DELETE CASCADE,
+
+    CONSTRAINT pk_client_agency PRIMARY KEY (client_id, agency_id)
+);
+
+
 ALTER TABLE projects
 ADD COLUMN category TEXT,
 ADD COLUMN priority TEXT,
