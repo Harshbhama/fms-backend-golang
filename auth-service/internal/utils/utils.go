@@ -2,20 +2,18 @@ package utils
 
 import (
 	"fmt"
-	"golang.org/x/crypto/bcrypt"
-	"time"
+	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-		"github.com/gin-gonic/gin"
-		"strings"
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
+	"golang.org/x/crypto/bcrypt"
 	"log"
 	"os"
+	"strings"
+	"time"
 )
 
-
 const base62Alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-
 
 func IntToBase62(num int64) string {
 	var result string
@@ -42,7 +40,7 @@ func Base62ToInt(base62 string) (int64, error) {
 	return result, nil
 }
 
-func HashPassword(password string) (string, error){
+func HashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	return string(bytes), err
 }
@@ -53,10 +51,8 @@ func CheckPasswordHash(password, hash string) bool {
 }
 
 func GetSharedMetadataTableName(id int64) string {
-    return fmt.Sprintf("timesheetmetadata%d", id%4)
+	return fmt.Sprintf("timesheetmetadata%d", id%4)
 }
-
-
 
 var jwtSecret = []byte("abcd") // Replace with your secret
 
@@ -90,9 +86,6 @@ func ValidateJWT(tokenString string) (int64, error) {
 	}
 	return int64(userIDFloat), nil
 }
-
-
-
 
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -135,10 +128,8 @@ func SendEmail(toEmail, url string) error {
 
 	key := os.Getenv("SENDGRID_API_KEY")
 	if key == "" {
-			log.Fatal("SENDGRID_API_KEY is missing! Check your environment variables.")
+		log.Fatal("SENDGRID_API_KEY is missing! Check your environment variables.")
 	}
- 
-
 
 	client := sendgrid.NewSendClient(os.Getenv("SENDGRID_API_KEY"))
 	response, err := client.Send(message)

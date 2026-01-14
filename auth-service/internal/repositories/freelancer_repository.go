@@ -2,8 +2,8 @@ package repositories
 
 import (
 	"database/sql"
-	"fmt"
 	"errors"
+	"fmt"
 	"github.com/lib/pq"
 	"github.com/yourusername/auth-service/internal/models"
 	"github.com/yourusername/auth-service/internal/utils"
@@ -36,19 +36,19 @@ func (r *FreelancerRepository) CreateFreelancer(f *models.Freelancer) error {
 	RETURNING id
 `
 
-return r.DB.QueryRow(
-	query,
-	f.ID,
-	f.Firstname,
-	f.Lastname,
-	f.ProfessionalTitle,
-	f.ProfessionalBio,
-	f.Location,
-	f.HourlyRate,
-	f.ExperienceLevel,
-	f.Availability,
-	pq.Array(f.Skills), // use pq.Array for []string
-).Scan(&f.ID)
+	return r.DB.QueryRow(
+		query,
+		f.ID,
+		f.Firstname,
+		f.Lastname,
+		f.ProfessionalTitle,
+		f.ProfessionalBio,
+		f.Location,
+		f.HourlyRate,
+		f.ExperienceLevel,
+		f.Availability,
+		pq.Array(f.Skills), // use pq.Array for []string
+	).Scan(&f.ID)
 }
 
 func (r *FreelancerRepository) CreateFreelancerRates(fr *models.FreelancerRates) error {
@@ -97,7 +97,7 @@ func (r *FreelancerRepository) CreateFreelancerTimesheetMetadata(ftm *models.Fre
 		INSERT INTO %s (timesheet_id, date, hours, status, remarks, created_at)
 		VALUES ($1, $2, $3, $4, $5, NOW()) RETURNING metadata_id
 	`, table)
-	
+
 	return r.DB.QueryRow(query, ftm.TimesheetID, ftm.Date, ftm.Hours, ftm.Status, ftm.Remarks).Scan(&ftm.MetadataID)
 }
 

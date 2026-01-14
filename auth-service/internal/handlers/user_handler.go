@@ -1,9 +1,9 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
-	"fmt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
@@ -42,7 +42,7 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 	// password, err := utils.HashPassword(user.Password)
 
 	// user.Password = password
-	
+
 	h.logger.Info("Creating user:", user)
 	if err := h.userService.CreateUser(&user); err != nil {
 		h.logger.Error("Failed to create user:", err)
@@ -51,7 +51,7 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 		return
 	}
 
-	if(user.Role == "Freelancer"){
+	if user.Role == "Freelancer" {
 		err := utils.SendEmail(user.Email, fmt.Sprintf("http://localhost:8081?freelancer_email=%s&client_id=%d", user.Email, user.ClientID))
 		if err != nil {
 			h.logger.Error("Failed to send email:", err)
@@ -61,10 +61,10 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 		c.JSON(http.StatusCreated, gin.H{
 			"message": "User created successfully",
 			"user":    user,
-			"url":  fmt.Sprintf("http://localhost:8081?freelancer_email=%s&client_id=%d", user.Email, user.ClientID),
+			"url":     fmt.Sprintf("http://localhost:8081?freelancer_email=%s&client_id=%d", user.Email, user.ClientID),
 		})
 		return
-		
+
 	}
 
 	c.JSON(http.StatusCreated, gin.H{

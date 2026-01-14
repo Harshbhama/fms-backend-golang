@@ -8,7 +8,7 @@ import (
 type UserService struct {
 	userRepository *repositories.UserRepository
 }
- 
+
 func NewUserService(userRepository *repositories.UserRepository) *UserService {
 	return &UserService{userRepository: userRepository}
 }
@@ -23,7 +23,7 @@ func (s *UserService) GetUserByEmail(email string) (*models.User, error) {
 
 func (s *UserService) GetUser(id int64) (*models.User, error) {
 	return s.userRepository.GetUser(id)
-} 
+}
 
 func (s *UserService) UpdateUser(id int64, user *models.User) error {
 	return s.userRepository.UpdateUser(id, user)

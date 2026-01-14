@@ -1,12 +1,12 @@
 package handlers
 
 import (
-	"net/http"
-	"strconv"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"github.com/yourusername/auth-service/internal/models"
 	"github.com/yourusername/auth-service/internal/services"
+	"net/http"
+	"strconv"
 )
 
 type FreelancerHandler struct {
@@ -27,7 +27,7 @@ func (h *FreelancerHandler) CreateFreelancer(c *gin.Context) {
 		h.logger.Error("Failed to bind JSON:", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body", "msg": err.Error()})
 		return
-	} 
+	}
 
 	err = h.Service.CreateFreelancer(&freelancer)
 	if err != nil {
@@ -54,7 +54,7 @@ func (h *FreelancerHandler) CreateFreelancerRates(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create freelancer rates", "msg": err.Error()})
 		return
 	}
- 
+
 	c.JSON(http.StatusCreated, gin.H{"message": "Freelancer rates created successfully", "id": freelancerRates.ID})
 }
 
@@ -131,7 +131,7 @@ func (h *FreelancerHandler) GetFreelancerForClient(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message":   "Freelancers fetched successfully12",
+		"message":     "Freelancers fetched successfully12",
 		"freelancers": freelancers,
 	})
 }

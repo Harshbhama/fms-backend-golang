@@ -3,9 +3,9 @@ package repositories
 import (
 	"database/sql"
 
-	"github.com/yourusername/auth-service/internal/models"
 	"encoding/json"
 	"github.com/lib/pq"
+	"github.com/yourusername/auth-service/internal/models"
 )
 
 type ProjectRepository struct {
@@ -42,7 +42,7 @@ func (r *ProjectRepository) CreateProject(p *models.Projects) error {
 	if p.Timeline != nil {
 		timelineJSON, _ = json.Marshal(p.Timeline)
 	}
- 
+
 	return r.DB.QueryRow(
 		query,
 		p.Name,
@@ -84,4 +84,3 @@ func (r *ProjectRepository) SearchProjects(searchTerm string) ([]models.Projects
 	}
 	return projects, nil
 }
-

@@ -15,18 +15,18 @@ import (
 
 type ClientHandler struct {
 	clientService *services.ClientService
-	logger      *logrus.Logger
+	logger        *logrus.Logger
 }
 
-func NewClientHandler(clientService *services.ClientService, logger *logrus.Logger) *ClientHandler{
+func NewClientHandler(clientService *services.ClientService, logger *logrus.Logger) *ClientHandler {
 	return &ClientHandler{clientService: clientService, logger: logger}
-	
+
 }
 
-func (h *ClientHandler) CreateClient(c *gin.Context){
+func (h *ClientHandler) CreateClient(c *gin.Context) {
 	var client models.Client
 	print("Creating client")
-	
+
 	err := c.ShouldBindJSON(&client)
 
 	if err != nil {
@@ -79,7 +79,6 @@ func (h *ClientHandler) CreateClientAgency(c *gin.Context) {
 	}
 	c.JSON(http.StatusCreated, gin.H{"message": "Client-Agency relationship created successfully", "client_id": clientAgency.ClientId, "agency_id": clientAgency.AgencyId})
 }
-
 
 func (h *ClientHandler) CreateClientProject(c *gin.Context) {
 	var clientProject models.ClientProject

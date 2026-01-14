@@ -12,8 +12,8 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/yourusername/auth-service/internal/config"
 	"github.com/yourusername/auth-service/internal/repositories"
-	"github.com/yourusername/auth-service/internal/services"
 	"github.com/yourusername/auth-service/internal/routes"
+	"github.com/yourusername/auth-service/internal/services"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )

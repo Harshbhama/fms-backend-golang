@@ -2,12 +2,12 @@ package repositories
 
 import (
 	"database/sql"
-	"time"
 	"fmt"
+	"time"
 	// "github.com/aws/aws-sdk-go-v2/aws/protocol/query"
+	"errors"
 	"github.com/yourusername/auth-service/internal/models"
 	"github.com/yourusername/auth-service/internal/utils"
-	"errors"
 )
 
 type UserRepository struct {
@@ -24,7 +24,7 @@ func (r *UserRepository) CreateUser(user *models.User) error {
 
 	return r.db.QueryRow(query, user.Email, user.Password, user.Role, time.Now(), time.Now()).Scan(&user.ID)
 }
- 
+
 func (r *UserRepository) GetUser(id int64) (*models.User, error) {
 	query := `SELECT * FROM users WHERE id = $1`
 
@@ -49,7 +49,7 @@ func (r *UserRepository) LoginUser(loginInput *models.UserLogin) (*models.User, 
 	query := `Select id, email, password, role, created_at, updated_at from users where email = $1`
 
 	row := r.db.QueryRow(query, loginInput.Email)
-	
+
 	var users models.User
 	err := row.Scan(&users.ID, &users.Email, &users.Password, &users.Role, &users.CreatedAt, &users.UpdatedAt)
 	if err == sql.ErrNoRows {
@@ -58,7 +58,7 @@ func (r *UserRepository) LoginUser(loginInput *models.UserLogin) (*models.User, 
 	}
 	fmt.Println("DB hash:", users.Password)
 	fmt.Println("Candidate pwd:", loginInput.Password)
-	if(utils.CheckPasswordHash(loginInput.Password, users.Password)){
+	if utils.CheckPasswordHash(loginInput.Password, users.Password) {
 		if err != nil {
 			return nil, err
 		}
@@ -67,9 +67,9 @@ func (r *UserRepository) LoginUser(loginInput *models.UserLogin) (*models.User, 
 		if err != nil {
 			return nil, err
 		}
-		users.Token = jwtToken 
+		users.Token = jwtToken
 		return &users, nil
-	} else{
+	} else {
 		return nil, errors.New("password is not correct")
 	}
 

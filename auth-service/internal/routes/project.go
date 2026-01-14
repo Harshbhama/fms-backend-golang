@@ -9,15 +9,15 @@ import (
 )
 
 type ProjectRoutes struct {
-	router            *gin.Engine
-	logger            *logrus.Logger
+	router         *gin.Engine
+	logger         *logrus.Logger
 	projectService *services.ProjectService
 }
 
 func NewSetupProjectRoutes(router *gin.Engine, logger *logrus.Logger, projectService *services.ProjectService) *ProjectRoutes {
 	return &ProjectRoutes{
-		router:            router,
-		logger:            logger,
+		router:         router,
+		logger:         logger,
 		projectService: projectService,
 	}
 }
@@ -29,4 +29,3 @@ func (r *ProjectRoutes) SetupProjectRoutes() {
 	r.router.POST("/projects", authMiddleware, handler.CreateProject)
 	r.router.GET("/projects/search", authMiddleware, handler.SearchProjects)
 }
-

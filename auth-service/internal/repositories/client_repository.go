@@ -7,9 +7,7 @@ import (
 	// "github.com/aws/aws-sdk-go-v2/aws/protocol/query"
 	"github.com/yourusername/auth-service/internal/models"
 	// "github.com/yourusername/auth-service/internal/utils"
-	
 	// "errors"
-	
 )
 
 type ClientRepository struct {
@@ -22,7 +20,6 @@ func NewClientRepository(db *sql.DB) *ClientRepository {
 
 func (r *ClientRepository) CreateClient(client *models.Client) error {
 
-	
 	query := `INSERT INTO clients (id, first_name, last_name, created_at, updated_at)
 	          VALUES ($1, $2, $3, NOW(), NOW()) RETURNING id`
 
@@ -41,7 +38,7 @@ func (r *ClientRepository) CreateClientFreelancer(clientFreelancer *models.Clien
 
 func (r *ClientRepository) CreateClientAgency(clientAgency *models.ClientAgency) error {
 	query := `INSERT INTO client_agencies (client_id, agency_id, created_at)
-	          VALUES ($1, $2, NOW()) RETURNING client_id, agency_id`
+	          VALUES ($1, $2, NOW())`
 	_, err := r.db.Exec(query, clientAgency.ClientId, clientAgency.AgencyId)
 	if err != nil {
 		return err
@@ -59,7 +56,7 @@ func (r *ClientRepository) CreateClientProject(clientProject *models.ClientProje
 	return nil
 }
 
-func (r *ClientRepository) GetProjectsByClientId(id uint) (*[] models.ClientProjects, error) {
+func (r *ClientRepository) GetProjectsByClientId(id uint) (*[]models.ClientProjects, error) {
 	query := `
 	SELECT 
 		cp.client_id, 
@@ -79,16 +76,14 @@ func (r *ClientRepository) GetProjectsByClientId(id uint) (*[] models.ClientProj
 	WHERE cp.client_id = $1
 `
 
-
 	rows, err := r.db.Query(query, id)
-
 
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 	var projects []models.ClientProjects
-	
+
 	for rows.Next() {
 		var project models.ClientProjects
 		err := rows.Scan(&project.ClientID, &project.ProjectID, &project.Status, &project.Description, &project.Category,
@@ -103,5 +98,5 @@ func (r *ClientRepository) GetProjectsByClientId(id uint) (*[] models.ClientProj
 		return nil, err
 	}
 	return &projects, nil
-	
+
 }

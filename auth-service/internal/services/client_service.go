@@ -8,7 +8,7 @@ import (
 type ClientService struct {
 	clientRepository *repositories.ClientRepository
 }
- 
+
 func NewClientService(clientRepository *repositories.ClientRepository) *ClientService {
 	return &ClientService{clientRepository: clientRepository}
 }
@@ -35,6 +35,6 @@ func (s *ClientService) CreateClientProject(clientProject *models.ClientProject)
 	return s.clientRepository.CreateClientProject(clientProject)
 }
 
-func (s *ClientService) GetProjectsByClientId(id uint) (*[] models.ClientProjects, error) {
+func (s *ClientService) GetProjectsByClientId(id uint) (*[]models.ClientProjects, error) {
 	return s.clientRepository.GetProjectsByClientId(id)
 }
