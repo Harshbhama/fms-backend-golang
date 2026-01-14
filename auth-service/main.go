@@ -44,6 +44,9 @@ func main() {
 	freelancerRepo := repositories.NewFreelancerRepository(cfg.DB)
 	freelancerService := services.NewFreelancerService(freelancerRepo)
 
+	agencyRepo := repositories.NewAgencyRepository(cfg.DB)
+	agencyService := services.NewAgencyService(agencyRepo)
+
 	projectRepo := repositories.NewProjectRepository(cfg.DB)
 	projectService := services.NewProjectService(projectRepo)
 
@@ -66,11 +69,13 @@ func main() {
 	clientRoutes := routes.NewSetupClientRoutes(router, logger, clientService)
 	projectRoutes := routes.NewSetupProjectRoutes(router, logger, projectService)
 	freelancerRoutes := routes.NewSetupFreelancerRoutes(router, logger, freelancerService)
+	agencyRoutes := routes.NewSetupAgencyRoutes(router, logger, agencyService)
 
 	authRoutes.Setup()
 	clientRoutes.SetupClient()
 	projectRoutes.SetupProjectRoutes()
 	freelancerRoutes.SetupFreelancer()
+	agencyRoutes.SetupAgency()
 
 	// Start server
 	port := ":8080"
