@@ -21,10 +21,9 @@ func (r *AgencyRepository) CreateAgency(a *models.Agency) error {
 		email,
 		website,
 		description,
-		location,
-		created_at
+		location
 	)
-	VALUES ($1, $2, $3, $4, $5, $6, NOW())
+	VALUES ($1, $2, $3, $4, $5, $6)
 	RETURNING id
 `
 
