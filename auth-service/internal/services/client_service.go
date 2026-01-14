@@ -8,7 +8,7 @@ import (
 type ClientService struct {
 	clientRepository *repositories.ClientRepository
 }
- 
+
 func NewClientService(clientRepository *repositories.ClientRepository) *ClientService {
 	return &ClientService{clientRepository: clientRepository}
 }
@@ -24,6 +24,10 @@ func (s *ClientService) CreateClientFreelancer(clientFreelancer *models.ClientFr
 	return s.clientRepository.CreateClientFreelancer(clientFreelancer)
 }
 
+func (s *ClientService) CreateClientAgency(clientAgency *models.ClientAgency) error {
+	return s.clientRepository.CreateClientAgency(clientAgency)
+}
+
 func (s *ClientService) CreateClientProject(clientProject *models.ClientProject) error {
 	// This function is not implemented yet
 	// Here you would typically call a repository method to create the client-project relationship
@@ -31,6 +35,6 @@ func (s *ClientService) CreateClientProject(clientProject *models.ClientProject)
 	return s.clientRepository.CreateClientProject(clientProject)
 }
 
-func (s *ClientService) GetProjectsByClientId(id uint) (*[] models.ClientProjects, error) {
+func (s *ClientService) GetProjectsByClientId(id uint) (*[]models.ClientProjects, error) {
 	return s.clientRepository.GetProjectsByClientId(id)
 }

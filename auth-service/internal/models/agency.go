@@ -23,4 +23,3 @@ type Agency struct {
 	AddToFavorites  bool           `json:"add_to_favorites"`
 	CreatedAt       *string        `json:"created_at,omitempty"`
 }
-

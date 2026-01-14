@@ -1,11 +1,11 @@
 package handlers
 
 import (
-	"net/http"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"github.com/yourusername/auth-service/internal/models"
 	"github.com/yourusername/auth-service/internal/services"
+	"net/http"
 )
 
 type AgencyHandler struct {
@@ -19,7 +19,7 @@ func NewAgencyHandler(service *services.AgencyService, logger *logrus.Logger) *A
 
 func (h *AgencyHandler) CreateAgency(c *gin.Context) {
 	var agency models.Agency
-	
+
 	err := c.ShouldBindJSON(&agency)
 	if err != nil {
 		h.logger.Error("Failed to bind JSON:", err)
