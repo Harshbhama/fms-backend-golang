@@ -16,7 +16,7 @@ func NewAgencyRepository(db *sql.DB) *AgencyRepository {
 
 func (r *AgencyRepository) CreateAgency(a *models.Agency) error {
 	query := `
-	INSERT INTO agencies (
+	INSERT INTO agency (
 		id,
 		name,
 		email,
