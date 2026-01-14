@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/lib/pq"
 	"github.com/yourusername/auth-service/internal/models"
 )
@@ -81,7 +82,7 @@ func (r *AgencyRepository) GetAgencyByClientID(id uint, search string) (*[]model
 	if search != "" {
 		// Validate search input length to prevent abuse
 		if len(search) > 100 {
-			return nil, sql.ErrNoRows
+			return nil, fmt.Errorf("search query too long (max 100 characters)")
 		}
 		query += ` AND (
 			LOWER(ag.name) LIKE LOWER($2) OR 
