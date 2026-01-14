@@ -102,7 +102,9 @@ func (r *FreelancerRepository) CreateFreelancerTimesheetMetadata(ftm *models.Fre
 }
 
 func (r *FreelancerRepository) GetFreelancerByClientID(id uint) (*[]models.FreelancerClientJoin, error) {
-	query := `SELECT freelancer_id, first_name, last_name, fl.created_at, email, client_id
+	query := `SELECT cl.freelancer_id, fl.first_name, fl.last_name, fl.professional_title, 
+		fl.professional_bio, fl.location, fl.hourly_rate, fl.experience_level, 
+		fl.availability, fl.skills, cl.client_id, fl.created_at, u.email
 		FROM client_freelancers cl
 		INNER JOIN freelancers fl 
 			ON fl.id = cl.freelancer_id
@@ -120,7 +122,9 @@ func (r *FreelancerRepository) GetFreelancerByClientID(id uint) (*[]models.Freel
 
 	for rows.Next() {
 		var f models.FreelancerClientJoin
-		if err := rows.Scan(&f.FreelancerID, &f.FirstName, &f.LastName, &f.CreatedAt, &f.Email, &f.ClientID); err != nil {
+		if err := rows.Scan(&f.FreelancerID, &f.FirstName, &f.LastName, &f.ProfessionalTitle, 
+			&f.ProfessionalBio, &f.Location, &f.HourlyRate, &f.ExperienceLevel, 
+			&f.Availability, pq.Array(&f.Skills), &f.ClientID, &f.CreatedAt, &f.Email); err != nil {
 			return nil, err
 		}
 		freelancers = append(freelancers, f)
