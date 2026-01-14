@@ -44,6 +44,16 @@ CREATE TABLE client_freelancers (
 );
 
 
+CREATE TABLE client_agencies (
+    client_id BIGINT NOT NULL,
+    agency_id INT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    
+    CONSTRAINT fk_client_agency FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE,
+    CONSTRAINT fk_agency FOREIGN KEY (agency_id) REFERENCES agency(id) ON DELETE CASCADE,
+    
+    CONSTRAINT pk_client_agency PRIMARY KEY (client_id, agency_id)
+);
 
 
 CREATE TABLE freelancer_rates (

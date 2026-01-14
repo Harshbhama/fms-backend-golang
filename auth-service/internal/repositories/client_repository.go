@@ -39,6 +39,16 @@ func (r *ClientRepository) CreateClientFreelancer(clientFreelancer *models.Clien
 	return nil
 }
 
+func (r *ClientRepository) CreateClientAgency(clientAgency *models.ClientAgency) error {
+	query := `INSERT INTO client_agencies (client_id, agency_id, created_at)
+	          VALUES ($1, $2, NOW()) RETURNING client_id, agency_id`
+	_, err := r.db.Exec(query, clientAgency.ClientId, clientAgency.AgencyId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (r *ClientRepository) CreateClientProject(clientProject *models.ClientProject) error {
 	query := `INSERT INTO client_projects (client_id, project_id, created_at)
 	          VALUES ($1, $2, NOW()) RETURNING client_id, project_id`

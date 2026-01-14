@@ -15,3 +15,10 @@ type ClientProject struct {
 	CreatedAt       time.Time `json:"created_at"`
 	UpdatedAt       time.Time `json:"updated_at"`
 }
+
+type ClientAgency struct {
+	ClientId        int64     `json:"client_id"`
+	AgencyId        int64     `json:"agency_id"`
+	CreatedAt       time.Time `json:"created_at"`
+	UpdatedAt       time.Time `json:"updated_at"`
+}
