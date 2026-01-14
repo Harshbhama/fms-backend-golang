@@ -27,7 +27,7 @@ func (h *FreelancerHandler) CreateFreelancer(c *gin.Context) {
 		h.logger.Error("Failed to bind JSON:", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body", "msg": err.Error()})
 		return
-	}
+	} 
 
 	err = h.Service.CreateFreelancer(&freelancer)
 	if err != nil {
