@@ -101,7 +101,7 @@ func (r *FreelancerRepository) CreateFreelancerTimesheetMetadata(ftm *models.Fre
 	return r.DB.QueryRow(query, ftm.TimesheetID, ftm.Date, ftm.Hours, ftm.Status, ftm.Remarks).Scan(&ftm.MetadataID)
 }
 
-func (r *FreelancerRepository) GetFreelancerByClientID(id uint) (*[]models.FreelancerClientJoin, error) {
+func (r *FreelancerRepository) GetFreelancerByClientID(id uint, search string) (*[]models.FreelancerClientJoin, error) {
 	query := `SELECT cl.freelancer_id, fl.first_name, fl.last_name, fl.professional_title, 
 		fl.professional_bio, fl.location, fl.hourly_rate, fl.experience_level, 
 		fl.availability, fl.skills, cl.client_id, fl.created_at, u.email
@@ -112,7 +112,27 @@ func (r *FreelancerRepository) GetFreelancerByClientID(id uint) (*[]models.Freel
 			ON u.id = fl.id
 		WHERE client_id = $1`
 
-	rows, err := r.DB.Query(query, id)
+	var rows *sql.Rows
+	var err error
+
+	if search != "" {
+		query += ` AND (
+			LOWER(fl.first_name) LIKE LOWER($2) OR 
+			LOWER(fl.last_name) LIKE LOWER($2) OR 
+			LOWER(u.email) LIKE LOWER($2) OR 
+			LOWER(fl.professional_title) LIKE LOWER($2) OR 
+			LOWER(fl.location) LIKE LOWER($2) OR
+			EXISTS (
+				SELECT 1 FROM unnest(fl.skills) AS skill 
+				WHERE LOWER(skill) LIKE LOWER($2)
+			)
+		)`
+		searchPattern := "%" + search + "%"
+		rows, err = r.DB.Query(query, id, searchPattern)
+	} else {
+		rows, err = r.DB.Query(query, id)
+	}
+
 	if err != nil {
 		return nil, err
 	}

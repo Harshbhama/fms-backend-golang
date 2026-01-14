@@ -122,7 +122,11 @@ func (h *FreelancerHandler) GetFreelancerForClient(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid client ID"})
 		return
 	}
-	freelancers, err := h.Service.GetFreelancerByClientID(uint(id))
+
+	// Get search query parameter (optional)
+	search := c.Query("search")
+
+	freelancers, err := h.Service.GetFreelancerByClientID(uint(id), search)
 	h.logger.Info("Freelancers fetched for client ID:", id, freelancers)
 	if err != nil {
 		print("Failed to get freelancers for client--------------------------------", err.Error())

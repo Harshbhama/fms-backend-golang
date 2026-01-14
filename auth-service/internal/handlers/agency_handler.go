@@ -6,6 +6,7 @@ import (
 	"github.com/yourusername/auth-service/internal/models"
 	"github.com/yourusername/auth-service/internal/services"
 	"net/http"
+	"strconv"
 )
 
 type AgencyHandler struct {
@@ -35,4 +36,29 @@ func (h *AgencyHandler) CreateAgency(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{"message": "Agency created successfully", "id": agency.ID})
+}
+
+func (h *AgencyHandler) GetAgencyForClient(c *gin.Context) {
+	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		h.logger.Error("Failed to parse client ID:", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid client ID"})
+		return
+	}
+
+	// Get search query parameter (optional)
+	search := c.Query("search")
+
+	agencies, err := h.Service.GetAgencyByClientID(uint(id), search)
+	h.logger.Info("Agencies fetched for client ID:", id, agencies)
+	if err != nil {
+		h.logger.Error("Failed to get agencies for client:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get agencies for client", "msg": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message":  "Agencies fetched successfully",
+		"agencies": agencies,
+	})
 }

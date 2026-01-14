@@ -62,3 +62,65 @@ func (r *AgencyRepository) CreateAgency(a *models.Agency) error {
 	)
 	return err
 }
+
+func (r *AgencyRepository) GetAgencyByClientID(id uint, search string) (*[]models.AgencyClientJoin, error) {
+	query := `SELECT ca.agency_id, ag.name, ag.email, ag.website, ag.description, ag.location, 
+		ag.team_size, ag.founded_year, ag.min_budget, ag.avg_hourly_rate, ag.specializations, 
+		ag.services, ag.phone, ag.address, ag.certifications, ag.languages, ca.client_id, ca.created_at
+		FROM client_agencies ca
+		INNER JOIN agency ag 
+			ON ag.id = ca.agency_id
+		WHERE ca.client_id = $1`
+
+	var rows *sql.Rows
+	var err error
+
+	if search != "" {
+		query += ` AND (
+			LOWER(ag.name) LIKE LOWER($2) OR 
+			LOWER(ag.email) LIKE LOWER($2) OR 
+			LOWER(ag.location) LIKE LOWER($2) OR 
+			LOWER(ag.description) LIKE LOWER($2) OR
+			EXISTS (
+				SELECT 1 FROM unnest(ag.specializations) AS spec 
+				WHERE LOWER(spec) LIKE LOWER($2)
+			) OR
+			EXISTS (
+				SELECT 1 FROM unnest(ag.services) AS service 
+				WHERE LOWER(service) LIKE LOWER($2)
+			)
+		)`
+		searchPattern := "%" + search + "%"
+		rows, err = r.DB.Query(query, id, searchPattern)
+	} else {
+		rows, err = r.DB.Query(query, id)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var agencies []models.AgencyClientJoin
+
+	for rows.Next() {
+		var a models.AgencyClientJoin
+		if err := rows.Scan(&a.AgencyID, &a.Name, &a.Email, &a.Website, &a.Description, 
+			&a.Location, &a.TeamSize, &a.FoundedYear, &a.MinBudget, &a.AvgHourlyRate, 
+			pq.Array(&a.Specializations), pq.Array(&a.Services), &a.Phone, &a.Address, 
+			pq.Array(&a.Certifications), pq.Array(&a.Languages), &a.ClientID, &a.CreatedAt); err != nil {
+			return nil, err
+		}
+		agencies = append(agencies, a)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	if len(agencies) == 0 {
+		return nil, sql.ErrNoRows
+	}
+
+	return &agencies, nil
+}

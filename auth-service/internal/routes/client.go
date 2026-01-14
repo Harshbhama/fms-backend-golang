@@ -15,19 +15,22 @@ type SetupClientRoutes struct {
 	Router        *gin.Engine
 	Logger        *logrus.Logger
 	ClientService *services.ClientService
+	AgencyService *services.AgencyService
 }
 
-func NewSetupClientRoutes(router *gin.Engine, logger *logrus.Logger, clientService *services.ClientService) *SetupClientRoutes {
+func NewSetupClientRoutes(router *gin.Engine, logger *logrus.Logger, clientService *services.ClientService, agencyService *services.AgencyService) *SetupClientRoutes {
 	return &SetupClientRoutes{
 		Router:        router,
 		Logger:        logger,
 		ClientService: clientService,
+		AgencyService: agencyService,
 	}
 }
 
 func (r *SetupClientRoutes) SetupClient() {
 
 	clientHandler := handlers.NewClientHandler(r.ClientService, r.Logger)
+	agencyHandler := handlers.NewAgencyHandler(r.AgencyService, r.Logger)
 	authMiddleware := utils.AuthMiddleware()
 
 	r.Router.POST("/client", clientHandler.CreateClient)
@@ -35,4 +38,5 @@ func (r *SetupClientRoutes) SetupClient() {
 	r.Router.POST("/client-agency", clientHandler.CreateClientAgency)
 	r.Router.POST("/client-project", authMiddleware, clientHandler.CreateClientProject)
 	r.Router.GET("/projects-by-client/:id", authMiddleware, clientHandler.GetClientProjects)
+	r.Router.GET("/agency-by-client/:id", authMiddleware, agencyHandler.GetAgencyForClient)
 }
