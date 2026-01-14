@@ -16,3 +16,7 @@ func NewAgencyService(repo *repositories.AgencyRepository) *AgencyService {
 func (s *AgencyService) CreateAgency(a *models.Agency) error {
 	return s.Repo.CreateAgency(a)
 }
+
+func (s *AgencyService) GetAgencyByClientID(id uint, search string) (*[]models.AgencyClientJoin, error) {
+	return s.Repo.GetAgencyByClientID(id, search)
+}

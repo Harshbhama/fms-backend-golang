@@ -39,10 +39,17 @@ type FreelancerTimesheetMetadata struct {
 }
 
 type FreelancerClientJoin struct {
-	FreelancerID int64  `json:"freelancer_id"`
-	FirstName    string `json:"first_name"`
-	LastName     string `json:"last_name"`
-	ClientID     int64  `json:"client_id"`
-	CreatedAt    string `json:"created_at"`
-	Email        string `json:"email"`
+	FreelancerID      int64    `json:"freelancer_id"`
+	FirstName         string   `json:"first_name"`
+	LastName          string   `json:"last_name"`
+	ProfessionalTitle *string  `json:"professional_title,omitempty"`
+	ProfessionalBio   *string  `json:"professional_bio,omitempty"`
+	Location          *string  `json:"location,omitempty"`
+	HourlyRate        *float64 `json:"hourly_rate,omitempty"`
+	ExperienceLevel   *string  `json:"experience_level,omitempty"`
+	Availability      *string  `json:"availability,omitempty"`
+	Skills            []string `json:"skills,omitempty"`
+	ClientID          int64    `json:"client_id"`
+	CreatedAt         string   `json:"created_at"`
+	Email             string   `json:"email"`
 }

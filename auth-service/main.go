@@ -66,7 +66,7 @@ func main() {
 
 	// Setup routes
 	authRoutes := routes.NewSetupRoutes(router, logger, authService)
-	clientRoutes := routes.NewSetupClientRoutes(router, logger, clientService)
+	clientRoutes := routes.NewSetupClientRoutes(router, logger, clientService, agencyService)
 	projectRoutes := routes.NewSetupProjectRoutes(router, logger, projectService)
 	freelancerRoutes := routes.NewSetupFreelancerRoutes(router, logger, freelancerService)
 	agencyRoutes := routes.NewSetupAgencyRoutes(router, logger, agencyService)

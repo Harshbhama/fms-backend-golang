@@ -23,3 +23,24 @@ type Agency struct {
 	AddToFavorites  bool           `json:"add_to_favorites"`
 	CreatedAt       *string        `json:"created_at,omitempty"`
 }
+
+type AgencyClientJoin struct {
+	AgencyID        int64          `json:"agency_id"`
+	Name            string         `json:"name"`
+	Email           string         `json:"email"`
+	Website         *string        `json:"website,omitempty"`
+	Description     string         `json:"description"`
+	Location        string         `json:"location"`
+	TeamSize        int            `json:"team_size"`
+	FoundedYear     int            `json:"founded_year"`
+	MinBudget       float64        `json:"min_budget"`
+	AvgHourlyRate   float64        `json:"avg_hourly_rate"`
+	Specializations pq.StringArray `json:"specializations"`
+	Services        pq.StringArray `json:"services"`
+	Phone           *string        `json:"phone,omitempty"`
+	Address         *string        `json:"address,omitempty"`
+	Certifications  pq.StringArray `json:"certifications,omitempty"`
+	Languages       pq.StringArray `json:"languages,omitempty"`
+	ClientID        int64          `json:"client_id"`
+	CreatedAt       string         `json:"created_at"`
+}

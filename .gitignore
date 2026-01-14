@@ -1,0 +1,17 @@
+# Binaries
+auth-service/auth-service
+client-service/client-service
+
+# Temporary files
+tmp/
+*.tmp
+
+# IDE
+.vscode/
+.idea/
+
+# Build artifacts
+*.exe
+*.dll
+*.so
+*.dylib

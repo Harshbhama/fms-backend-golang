@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
 	"github.com/lib/pq"
 	"github.com/yourusername/auth-service/internal/models"
@@ -101,8 +100,14 @@ func (r *FreelancerRepository) CreateFreelancerTimesheetMetadata(ftm *models.Fre
 	return r.DB.QueryRow(query, ftm.TimesheetID, ftm.Date, ftm.Hours, ftm.Status, ftm.Remarks).Scan(&ftm.MetadataID)
 }
 
-func (r *FreelancerRepository) GetFreelancerByClientID(id uint) (*[]models.FreelancerClientJoin, error) {
-	query := `SELECT freelancer_id, first_name, last_name, fl.created_at, email, client_id
+func (r *FreelancerRepository) GetFreelancerByClientID(id uint, search string) (*[]models.FreelancerClientJoin, error) {
+	// Note: For optimal performance, ensure database indexes exist on:
+	// - client_freelancers.client_id
+	// - freelancers(first_name, last_name, location, professional_title)
+	// - users.email
+	query := `SELECT cl.freelancer_id, fl.first_name, fl.last_name, fl.professional_title, 
+		fl.professional_bio, fl.location, fl.hourly_rate, fl.experience_level, 
+		fl.availability, fl.skills, cl.client_id, fl.created_at, u.email
 		FROM client_freelancers cl
 		INNER JOIN freelancers fl 
 			ON fl.id = cl.freelancer_id
@@ -110,7 +115,32 @@ func (r *FreelancerRepository) GetFreelancerByClientID(id uint) (*[]models.Freel
 			ON u.id = fl.id
 		WHERE client_id = $1`
 
-	rows, err := r.DB.Query(query, id)
+	var rows *sql.Rows
+	var err error
+
+	if search != "" {
+		// Validate search input length to prevent abuse
+		if len(search) > 100 {
+			return nil, fmt.Errorf("search query too long (max 100 characters)")
+		}
+		query += ` AND (
+			LOWER(fl.first_name) LIKE LOWER($2) OR 
+			LOWER(fl.last_name) LIKE LOWER($2) OR 
+			LOWER(u.email) LIKE LOWER($2) OR 
+			LOWER(fl.professional_title) LIKE LOWER($2) OR 
+			LOWER(fl.location) LIKE LOWER($2) OR
+			EXISTS (
+				SELECT 1 FROM unnest(fl.skills) AS skill 
+				WHERE LOWER(skill) LIKE LOWER($2)
+			)
+		)`
+		// Safe: searchPattern is passed as parameterized query argument, preventing SQL injection
+		searchPattern := "%" + search + "%"
+		rows, err = r.DB.Query(query, id, searchPattern)
+	} else {
+		rows, err = r.DB.Query(query, id)
+	}
+
 	if err != nil {
 		return nil, err
 	}
@@ -120,7 +150,9 @@ func (r *FreelancerRepository) GetFreelancerByClientID(id uint) (*[]models.Freel
 
 	for rows.Next() {
 		var f models.FreelancerClientJoin
-		if err := rows.Scan(&f.FreelancerID, &f.FirstName, &f.LastName, &f.CreatedAt, &f.Email, &f.ClientID); err != nil {
+		if err := rows.Scan(&f.FreelancerID, &f.FirstName, &f.LastName, &f.ProfessionalTitle, 
+			&f.ProfessionalBio, &f.Location, &f.HourlyRate, &f.ExperienceLevel, 
+			&f.Availability, pq.Array(&f.Skills), &f.ClientID, &f.CreatedAt, &f.Email); err != nil {
 			return nil, err
 		}
 		freelancers = append(freelancers, f)
@@ -131,7 +163,7 @@ func (r *FreelancerRepository) GetFreelancerByClientID(id uint) (*[]models.Freel
 	}
 
 	if len(freelancers) == 0 {
-		return nil, errors.New("no rows found")
+		return nil, sql.ErrNoRows
 	}
 
 	return &freelancers, nil
