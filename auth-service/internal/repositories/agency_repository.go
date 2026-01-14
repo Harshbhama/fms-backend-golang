@@ -3,6 +3,7 @@ package repositories
 import (
 	"database/sql"
 	"fmt"
+
 	"github.com/lib/pq"
 	"github.com/yourusername/auth-service/internal/models"
 )
@@ -114,10 +115,10 @@ func (r *AgencyRepository) GetAgencyByClientID(id uint, search string) (*[]model
 
 	for rows.Next() {
 		var a models.AgencyClientJoin
-		if err := rows.Scan(&a.AgencyID, &a.Name, &a.Email, &a.Website, &a.Description, 
-			&a.Location, &a.TeamSize, &a.FoundedYear, &a.MinBudget, &a.AvgHourlyRate, 
-			pq.Array(&a.Specializations), pq.Array(&a.Services), &a.Phone, &a.Address, 
-			pq.Array(&a.Certifications), pq.Array(&a.Languages), &a.ClientID, &a.CreatedAt); err != nil {
+		if err := rows.Scan(&a.AgencyID, &a.Name, &a.Email, &a.Website, &a.Description,
+			&a.Location, &a.TeamSize, &a.FoundedYear, &a.MinBudget, &a.AvgHourlyRate,
+			&a.Specializations, &a.Services, &a.Phone, &a.Address,
+			&a.Certifications, &a.Languages, &a.ClientID, &a.CreatedAt); err != nil {
 			return nil, err
 		}
 		agencies = append(agencies, a)
