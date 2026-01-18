@@ -168,3 +168,111 @@ func (r *FreelancerRepository) GetFreelancerByClientID(id uint, search string) (
 
 	return &freelancers, nil
 }
+
+func (r *FreelancerRepository) GetProjectsByFreelancerID(id uint, search string) (*[]models.FreelancerProjectJoin, error) {
+	query := `SELECT fl.freelancer_id, pj.id as project_id, pj.name, pj.description, pj.status,
+		pj.category, pj.priority, pj.detailed_requirements, pj.expected_deliverables, 
+		pj.assignment_timing, pj.created_at
+		FROM freelancer_projects fl
+		INNER JOIN projects pj 
+			ON fl.project_id = pj.id
+		WHERE freelancer_id = $1`
+
+	var rows *sql.Rows
+	var err error
+
+	if search != "" {
+		// Validate search input length to prevent abuse
+		if len(search) > 100 {
+			return nil, fmt.Errorf("search query too long (max 100 characters)")
+		}
+		query += ` AND (
+			LOWER(pj.name) LIKE LOWER($2) OR 
+			LOWER(pj.description) LIKE LOWER($2) OR 
+			LOWER(pj.status) LIKE LOWER($2) OR 
+			LOWER(pj.category) LIKE LOWER($2) OR 
+			LOWER(pj.priority) LIKE LOWER($2)
+		)`
+		// Safe: searchPattern is passed as parameterized query argument, preventing SQL injection
+		searchPattern := "%" + search + "%"
+		rows, err = r.DB.Query(query, id, searchPattern)
+	} else {
+		rows, err = r.DB.Query(query, id)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var projects []models.FreelancerProjectJoin
+
+	for rows.Next() {
+		var p models.FreelancerProjectJoin
+		if err := rows.Scan(&p.FreelancerID, &p.ProjectID, &p.Name, &p.Description, &p.Status,
+			&p.Category, &p.Priority, &p.DetailedRequirements, &p.ExpectedDeliverables,
+			&p.AssignmentTiming, &p.CreatedAt); err != nil {
+			return nil, err
+		}
+		projects = append(projects, p)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return &projects, nil
+}
+
+func (r *FreelancerRepository) GetClientsByFreelancerID(id uint, search string) (*[]models.ClientFreelancerJoin, error) {
+	query := `SELECT cl.client_id, c.first_name, c.last_name, u.email, 
+		c.created_at, cl.freelancer_id
+		FROM client_freelancers cl
+		INNER JOIN clients c 
+			ON cl.client_id = c.id
+		INNER JOIN users u 
+			ON u.id = c.id
+		WHERE freelancer_id = $1`
+
+	var rows *sql.Rows
+	var err error
+
+	if search != "" {
+		// Validate search input length to prevent abuse
+		if len(search) > 100 {
+			return nil, fmt.Errorf("search query too long (max 100 characters)")
+		}
+		query += ` AND (
+			LOWER(c.first_name) LIKE LOWER($2) OR 
+			LOWER(c.last_name) LIKE LOWER($2) OR 
+			LOWER(u.email) LIKE LOWER($2)
+		)`
+		// Safe: searchPattern is passed as parameterized query argument, preventing SQL injection
+		searchPattern := "%" + search + "%"
+		rows, err = r.DB.Query(query, id, searchPattern)
+	} else {
+		rows, err = r.DB.Query(query, id)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var clients []models.ClientFreelancerJoin
+
+	for rows.Next() {
+		var c models.ClientFreelancerJoin
+		if err := rows.Scan(&c.ClientID, &c.FirstName, &c.LastName, &c.Email,
+			&c.CreatedAt, &c.FreelancerID); err != nil {
+			return nil, err
+		}
+		clients = append(clients, c)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return &clients, nil
+}
