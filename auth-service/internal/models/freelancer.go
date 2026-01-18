@@ -53,3 +53,26 @@ type FreelancerClientJoin struct {
 	CreatedAt         string   `json:"created_at"`
 	Email             string   `json:"email"`
 }
+
+type FreelancerProjectJoin struct {
+	FreelancerID         int64   `json:"freelancer_id"`
+	ProjectID            int64   `json:"project_id"`
+	Name                 string  `json:"name"`
+	Description          string  `json:"description"`
+	Status               string  `json:"status"`
+	Category             *string `json:"category,omitempty"`
+	Priority             *string `json:"priority,omitempty"`
+	DetailedRequirements *string `json:"detailed_requirements,omitempty"`
+	ExpectedDeliverables *string `json:"expected_deliverables,omitempty"`
+	AssignmentTiming     *string `json:"assignment_timing,omitempty"`
+	CreatedAt            string  `json:"created_at"`
+}
+
+type ClientFreelancerJoin struct {
+	ClientID    int64  `json:"client_id"`
+	FirstName   string `json:"first_name"`
+	LastName    string `json:"last_name"`
+	Email       string `json:"email"`
+	CreatedAt   string `json:"created_at"`
+	FreelancerID int64  `json:"freelancer_id"`
+}

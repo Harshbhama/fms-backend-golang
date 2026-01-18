@@ -32,4 +32,6 @@ func (r *FreelancerRoutes) SetupFreelancer() {
 	r.router.POST("/freelancer-timesheet", authMiddleware, handler.CreateFreelancerTimesheet)
 	r.router.POST("/freelancer-timesheet-metadata", authMiddleware, handler.CreateFreelancerTimesheetMetadata)
 	r.router.GET("/freelancer-by-client/:id", authMiddleware, handler.GetFreelancerForClient)
+	r.router.GET("/projects-by-freelancer/:id", authMiddleware, handler.GetProjectsForFreelancer)
+	r.router.GET("/clients-by-freelancer/:id", authMiddleware, handler.GetClientsForFreelancer)
 }
