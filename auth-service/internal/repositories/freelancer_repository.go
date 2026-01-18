@@ -221,10 +221,6 @@ func (r *FreelancerRepository) GetProjectsByFreelancerID(id uint, search string)
 		return nil, err
 	}
 
-	if len(projects) == 0 {
-		return nil, sql.ErrNoRows
-	}
-
 	return &projects, nil
 }
 
@@ -276,10 +272,6 @@ func (r *FreelancerRepository) GetClientsByFreelancerID(id uint, search string) 
 
 	if err = rows.Err(); err != nil {
 		return nil, err
-	}
-
-	if len(clients) == 0 {
-		return nil, sql.ErrNoRows
 	}
 
 	return &clients, nil

@@ -152,13 +152,13 @@ func (h *FreelancerHandler) GetProjectsForFreelancer(c *gin.Context) {
 	search := c.Query("search")
 
 	projects, err := h.Service.GetProjectsByFreelancerID(uint(id), search)
-	h.logger.Info("Projects fetched for freelancer ID:", id)
 	if err != nil {
 		h.logger.Error("Failed to get projects for freelancer:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get projects for freelancer", "msg": err.Error()})
 		return
 	}
 
+	h.logger.Info("Projects fetched successfully for freelancer ID:", id)
 	c.JSON(http.StatusOK, gin.H{
 		"message":  "Projects fetched successfully",
 		"projects": projects,
@@ -177,13 +177,13 @@ func (h *FreelancerHandler) GetClientsForFreelancer(c *gin.Context) {
 	search := c.Query("search")
 
 	clients, err := h.Service.GetClientsByFreelancerID(uint(id), search)
-	h.logger.Info("Clients fetched for freelancer ID:", id)
 	if err != nil {
 		h.logger.Error("Failed to get clients for freelancer:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get clients for freelancer", "msg": err.Error()})
 		return
 	}
 
+	h.logger.Info("Clients fetched successfully for freelancer ID:", id)
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Clients fetched successfully",
 		"clients": clients,
